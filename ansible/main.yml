@@ -1,0 +1,101 @@
+---
+################################################################################
+################################################################################
+############ Step 0000 Setup Runtime
+################################################################################
+################################################################################
+- name: Step 0000 Set Action
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+  - name: Set ACTION to provision when undefined
+    when: ACTION is undefined
+    ansible.builtin.set_fact:
+      ACTION: provision
+
+- name: Setup Runtime
+  ansible.builtin.import_playbook: setup_runtime.yml
+
+################################################################################
+################################################################################
+############ Step 000 Pre Infrastructure Deploy Tasks
+################################################################################
+################################################################################
+
+- name: Run pre-infra tasks
+  ansible.builtin.import_playbook: "./configs/{{ env_type }}/pre_infra.yml"
+
+#################################################################################
+#################################################################################
+############ Step 001 Deploy Infrastructure
+#################################################################################
+#################################################################################
+
+# Use first found:
+# - infra.yml in config directory
+# - common cloud_provider
+- name: Deploy infrastructure
+  vars:
+    findme:
+    - configs/{{ env_type }}/infra_{{ cloud_provider }}.yml
+    - configs/{{ env_type }}/infra.yml
+    - cloud_providers/{{ cloud_provider }}_infrastructure_deployment.yml
+    - cloud_providers/none_infrastructure_deployment.yml
+  ansible.builtin.import_playbook: "{{ lookup('first_found', findme) }}"
+
+################################################################################
+################################################################################
+########### Step 002 Post Infrastructure Deploy Tasks
+################################################################################
+################################################################################
+
+- name: Post infrastructure tasks
+  ansible.builtin.import_playbook: "./configs/{{ env_type }}/post_infra.yml"
+
+- name: Export inventory
+  vars:
+    agnosticd_inventory_exporter_stage: post_infra
+  ansible.builtin.import_playbook: "export_inventory.yml"
+
+################################################################################
+################################################################################
+########### Step 003 Pre Software Deploy Tasks
+################################################################################
+################################################################################
+
+- name: Pre Software
+  ansible.builtin.import_playbook: "./configs/{{ env_type }}/pre_software.yml"
+
+##################################################################################
+##################################################################################
+############ Step 004 Software Deploy Tasks
+##################################################################################
+##################################################################################
+
+- name: Environment '{{ env_type }}' specific software playbook
+  ansible.builtin.import_playbook: "./configs/{{ env_type }}/software.yml"
+
+- name: Software Playbook '{{ software_to_deploy | default('none') }}'
+  ansible.builtin.import_playbook: "./software_playbooks/{{ software_to_deploy | d('none') }}.yml"
+
+################################################################################
+################################################################################
+############ Step 005 Post Software Deploy Tasks
+################################################################################
+################################################################################
+
+- name: Post software tasks
+  ansible.builtin.import_playbook: "./configs/{{ env_type }}/post_software.yml"
+
+- name: Export inventory
+  vars:
+    agnosticd_inventory_exporter_stage: post_software
+  ansible.builtin.import_playbook: "export_inventory.yml"
+
+- name: Save output dir
+  ansible.builtin.import_playbook: save_output_dir.yml
+
+- name: Completion callback
+  ansible.builtin.import_playbook: completion_callback.yml

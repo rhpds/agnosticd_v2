@@ -1,0 +1,120 @@
+---
+- name: Check if account exists in the DB
+  vars:
+    _data:
+      name:
+        S: "{{ account_name }}"
+  ansible.builtin.command: >-
+    aws --profile {{ aws_master_profile }}
+    --region {{ dynamodb_region }}
+    dynamodb get-item
+    --table-name {{ dynamodb_table }}
+    --key '{{ _data | to_json }}'
+    --query 'Item.account_id' --output text
+  register: _getaccountid
+
+- name: Set account id
+  when:
+  - _getaccountid.stdout != 'None'
+  - _getaccountid.stdout != ''
+  ansible.builtin.set_fact:
+    account_id: "{{ _getaccountid.stdout }}"
+    account_already_exists: true
+
+- name: Get account id
+  when:
+  - all_accounts is not defined
+  - operation == 'CREATE' or account_id is not defined
+  block:
+  - name: List all accounts in the organization.
+    ansible.builtin.command: >-
+      aws --profile {{ aws_master_profile }}
+      organizations list-accounts
+      --query 'Accounts[].{Name: Name, Id: Id}'
+    register: _listaccounts
+    changed_when: false
+
+  - name: Set all accounts
+    ansible.builtin.set_fact:
+      all_accounts: "{{ _listaccounts.stdout | from_json }}"
+
+- name: Create New account
+  when:
+  - operation == 'CREATE' or account_id is not defined
+  - account_name not in all_accounts|json_query('[].Name')
+  ansible.builtin.command: >-
+    aws --profile {{ aws_master_profile }}
+    organizations create-account
+    --email {{ account_email }}
+    --account-name "{{ account_name }}"
+    --role-name "{{ aws_role_name }}"
+    --query 'CreateAccountStatus.[Id]'
+    --output text
+  register: r_createaccount
+
+- name: Find and set account id
+  when:
+  - operation == 'CREATE' or account_id is not defined
+  - account_name in all_accounts|json_query('[].Name')
+  block:
+  - name: Find and set the account_id (existing account)
+    ansible.builtin.set_fact:
+      account_id: >-
+        {{
+        (
+        all_accounts
+        | selectattr('Name', 'equalto', account_name)
+        | first
+        )['Id']
+        }}
+
+  - name: Debug account id
+    ansible.builtin.debug:
+      var: account_id
+
+- name: Wait for account to be created.
+  when:
+  - r_createaccount is not skipped
+  - r_createaccount.stdout != ''
+  block:
+  - name: Wait for account to be created.
+    ansible.builtin.command: >-
+      aws --profile {{ aws_master_profile }}
+      organizations describe-create-account-status
+      --create-account-request-id {{ r_createaccount.stdout }}
+      --query 'CreateAccountStatus.[State]'
+      --output text
+    register: r_describestatus
+    until: r_describestatus.stdout in ['SUCCEEDED', 'FAILED']
+    delay: 5
+    retries: 40
+
+  - name: Faile when account creation failed
+    when: r_describestatus.stdout == 'FAILED'
+    ansible.builtin.fail:
+      msg: The creation of the account failed.
+
+  - name: Get the account ID
+    ansible.builtin.command: >-
+      aws --profile {{ aws_master_profile }}
+      organizations describe-create-account-status
+      --create-account-request-id {{ r_createaccount.stdout }}
+      --query 'CreateAccountStatus.[AccountId]'
+      --output text
+    register: r_describestatusid
+
+  - name: Save account id in variable 'account_id'
+    ansible.builtin.set_fact:
+      account_id: "{{ r_describestatusid.stdout }}"
+
+- name: Fail when account id is not defined
+  when: account_id is not defined
+  ansible.builtin.fail:
+    msg: Account Id not defined
+
+- name: Add Account Id to the report
+  ansible.builtin.lineinfile:
+    path: "{{ output_dir }}/{{ account_name }}_report.txt"
+    line: "account_id: {{ account_id }}"
+    create: true
+    mode: "0664"
