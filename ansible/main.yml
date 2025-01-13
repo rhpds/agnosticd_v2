@@ -25,7 +25,7 @@
 ################################################################################
 
 - name: Run pre-infra tasks
-  ansible.builtin.import_playbook: "./configs/{{ config }}/pre_infra.yml"
+  ansible.builtin.import_playbook: "configs/{{ config }}/pre_infra.yml"
 
 #################################################################################
 #################################################################################
@@ -41,7 +41,7 @@
     findme:
     - configs/{{ config }}/infra_{{ cloud_provider }}.yml
     - configs/{{ config }}/infra.yml
-    - cloud_providers/{{ cloud_provider }}_infrastructure_deployment.yml
+    - cloud_providers/{{ cloud_provider }}/{{ cloud_provider }}_infrastructure_deployment.yml
     - cloud_providers/none_infrastructure_deployment.yml
   ansible.builtin.import_playbook: "{{ lookup('first_found', findme) }}"
 
@@ -52,7 +52,7 @@
 ################################################################################
 
 - name: Post infrastructure tasks
-  ansible.builtin.import_playbook: "./configs/{{ config }}/post_infra.yml"
+  ansible.builtin.import_playbook: "configs/{{ config }}/post_infra.yml"
 
 - name: Export inventory
   vars:
@@ -66,7 +66,7 @@
 ################################################################################
 
 - name: Pre Software
-  ansible.builtin.import_playbook: "./configs/{{ config }}/pre_software.yml"
+  ansible.builtin.import_playbook: "configs/{{ config }}/pre_software.yml"
 
 ##################################################################################
 ##################################################################################
@@ -75,10 +75,10 @@
 ##################################################################################
 
 - name: Environment '{{ config }}' specific software playbook
-  ansible.builtin.import_playbook: "./configs/{{ config }}/software.yml"
+  ansible.builtin.import_playbook: "configs/{{ config }}/software.yml"
 
 - name: Software Playbook '{{ software_to_deploy | default('none') }}'
-  ansible.builtin.import_playbook: "./software_playbooks/{{ software_to_deploy | d('none') }}.yml"
+  ansible.builtin.import_playbook: "software_playbooks/{{ software_to_deploy | default('none') }}.yml"
 
 ################################################################################
 ################################################################################

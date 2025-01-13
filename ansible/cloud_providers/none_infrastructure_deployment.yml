@@ -1,0 +1,10 @@
+---
+- name: Step 001.1 Deploy Infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  tasks:
+  - name: Debug
+    ansible.builtin.debug:
+      msg: "None infrastructure deployment called"

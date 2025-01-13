@@ -63,7 +63,7 @@
         ansible.builtin.set_fact:
           # Cloudformation (bastion)
           aws_availability_zone: "{{ _r.az1.availability_zone }}"
-          # masters
+          # Control Plane
           # Support several logical mapping (masters, masters1-3)
           openshift_controlplane_aws_zones_odcr: >-
             {{ [

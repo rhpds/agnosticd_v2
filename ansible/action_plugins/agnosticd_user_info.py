@@ -33,7 +33,7 @@ yaml.SafeDumper.yaml_representers[None] = lambda self, data: \
 from ansible.errors import AnsibleError, AnsibleUndefinedVariable
 from ansible.module_utils.six import string_types
 from ansible.module_utils._text import to_text
-from ansible.plugins.ACTION import ActionBase
+from ansible.plugins.action import ActionBase
 
 class ActionModule(ActionBase):
     '''Print statements during execution and save user info to file'''

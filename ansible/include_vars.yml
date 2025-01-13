@@ -16,15 +16,11 @@
     vars:
       __vars_file_base:
       # Global default vars related to the cloud provider
-      - cloud_providers/{{ cloud_provider }}_default_vars
-      # Legacy env_vars.yml (replaced by default_vars.yml)
-      - configs/{{ config }}/env_vars
+      - cloud_providers/{{ cloud_provider }}/{{ cloud_provider }}_default_vars
       # Default vars of the config
       - configs/{{ config }}/default_vars
       # Default vars of the config, specific to a cloud provider
       - configs/{{ config }}/default_vars_{{ cloud_provider }}
-      # Lecacy secret vars file.
-      - configs/{{ config }}/env_secret_vars
       __vars_file_extension:
       - yaml
       - yml
@@ -35,6 +31,10 @@
     loop_control:
       loop_var: __vars_file_parts
       label: "{{ __vars_file }}"
+
+  - name: Debug secrets
+    ansible.builtin.debug:
+      msg: "Secrets file: {{ secrets_file | default('undefined') }}"
 
   - name: Include secret_file if passed as extra-var
     when: secret_file is defined

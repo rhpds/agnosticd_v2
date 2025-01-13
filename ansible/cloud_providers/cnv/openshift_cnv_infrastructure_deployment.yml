@@ -61,7 +61,7 @@
         {{ ansible_ssh_extra_args | default() }}
         -F {{ output_dir }}/{{ config }}_{{ guid }}_ssh_conf
 
-  - name: Run infra-generic-wait_for_linux_hosts Role
+  - name: Run infra-generic-wait-for-linux-hosts Role
     vars:
       infra_generic_wait_for_linux_hosts_delay: 30
       infra_generic_wait_for_linux_hosts_sleep: 10
@@ -69,7 +69,7 @@
       infra_generic_wait_for_linux_hosts_timeout: 1200
       infra_generic_wait_for_linux_hosts_retries: 10
     ansible.builtin.include_role:
-      name: infra-generic-wait_for_linux_hosts
+      name: infra-generic-wait-for-linux-hosts
 
   - name: Add authorized_keys
     when: >-

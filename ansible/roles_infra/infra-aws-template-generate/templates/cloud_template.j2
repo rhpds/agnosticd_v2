@@ -74,7 +74,7 @@ Resources:
       SubnetId:
         Ref: PublicSubnet
 
-{% for security_group in security_groups | list + default_security_groups | list %}
+{% for security_group in security_groups|list + default_security_groups|list %}
   {{ security_group['name'] }}:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
@@ -207,7 +207,7 @@ Resources:
         - Ref: AWS::Region
         - {{ instance.image | default(aws_default_image) }}
 {%     endif %}
-      InstanceType: "{{ instance['flavor'][cloud_provider] }}"
+      InstanceType: "{{ instance['flavor']['ec2'] }}"
       KeyName: "{{ instance.key_name | default(ssh_provision_key_name) | default(key_name) }}"
 {%     if instance['UserData'] is defined %}
       {{ instance['UserData'] }}
@@ -267,7 +267,7 @@ Resources:
         - DeviceName: "{{ vol.name | default(vol.device_name) }}"
           Ebs:
 {%       if cloud_provider in vol and 'type' in vol.ec2 %}
-            VolumeType: "{{ vol[cloud_provider].type }}"
+            VolumeType: "{{ vol['ec2'].type }}"
 {%       else %}
             VolumeType: "{{ aws_default_volume_type }}"
 {%       endif %}

@@ -58,4 +58,4 @@
     - r_aws_type_offerings.rc == 0
     # Do not try to pick the AZ when the config uses several Subnets
     - __all_subnets | length <= 1
-  iansible.builtin.nclude_tasks: locate_availability_zones_tasks.yml
+  ansible.builtin.include_tasks: locate_availability_zones_tasks.yml

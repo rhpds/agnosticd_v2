@@ -86,14 +86,14 @@ aws_dns_ttl_private: 3600
 aws_default_rootfs_size: 50
 
 # default Volume type
-aws_default_volume_type: gp2
+aws_default_volume_type: gp3
 
 #################################################################
 # Images
 #################################################################
 
 # changed to GOLD to save money via Red Hat Cloud Access program
-aws_default_image: RHEL75GOLD
+aws_default_image: RHEL95GOLD
 
 aws_ami_region_mapping:
   eu-north-1:
