@@ -24,7 +24,7 @@
 
 - name: Save stack tag
   ansible.builtin.set_fact:
-    stack_tag: "{{ env_type | replace('-', '_') }}_{{ guid }}"
+    stack_tag: "{{ config | replace('-', '_') }}_{{ guid }}"
 
 # Find the bastion
 - name: Find the bastion in this batch of host

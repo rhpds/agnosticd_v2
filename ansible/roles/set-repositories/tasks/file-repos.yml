@@ -28,7 +28,7 @@
 - name: file | create open.repo template on host
   template:
     src: "./files/repos_template.j2"
-    dest: /etc/yum.repos.d/open_{{ env_type }}.repo
+    dest: /etc/yum.repos.d/open_{{ config }}.repo
   tags:
    - create_open_repo_template
   ignore_errors: true

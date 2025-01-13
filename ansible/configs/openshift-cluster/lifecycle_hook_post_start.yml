@@ -49,7 +49,7 @@
     ansible.builtin.set_fact:
       ansible_ssh_extra_args: >-
         {{ ansible_ssh_extra_args | default() }}
-        -F {{ hostvars.localhost.output_dir }}/{{ env_type }}_{{ guid }}_ssh_conf
+        -F {{ hostvars.localhost.output_dir }}/{{ config }}_{{ guid }}_ssh_conf
 
 - name: Run recover cluster actions
   hosts: bastions

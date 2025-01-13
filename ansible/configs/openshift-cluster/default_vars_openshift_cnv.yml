@@ -57,6 +57,6 @@ instances:
   - key: "ostype"
     value: "linux"
   - key: "instance_filter"
-    value: "{{ env_type }}-{{ guid }}"
+    value: "{{ config }}-{{ guid }}"
   networks:
   - default

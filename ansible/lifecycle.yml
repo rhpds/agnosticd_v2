@@ -22,17 +22,17 @@
   gather_facts: false
   become: false
   tasks:
-  - name: Assert guid and env_type
+  - name: Assert guid and config
     when: >-
       guid is not defined or guid == ''
-      or env_type is not defined or env_type == ''
+      or config is not defined or config == ''
     ansible.builtin.fail:
-      msg: "guid and env_type must be defined"
+      msg: "guid and config must be defined"
 
   - name: Set default project tag
     when: project_tag is not defined
     ansible.builtin.set_fact:
-      project_tag: "{{ env_type }}-{{ guid }}"
+      project_tag: "{{ config }}-{{ guid }}"
 
   - name: Fail if ACTION is not defined
     when: ACTION is not defined

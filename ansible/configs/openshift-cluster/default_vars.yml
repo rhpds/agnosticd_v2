@@ -14,7 +14,7 @@ guid: notset
 cluster_name: "cluster-{{ guid }}"
 
 # Used to add metadata (tags) to OpenStack objects created
-project_tag: "{{ env_type }}-{{ guid }}"
+project_tag: "{{ config }}-{{ guid }}"
 
 # Why is this config being deployed? Override for specific environments
 # Some valid: development, ilt, production, event

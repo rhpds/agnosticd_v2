@@ -122,7 +122,7 @@
   - name: Set facts for remote access
     ansible.builtin.set_fact:
       aws_region_final: "{{ hostvars['localhost'].aws_region_final }}"
-      ansible_ssh_extra_args: "{{ ansible_ssh_extra_args | default() }} -F {{ output_dir }}/{{ env_type }}_{{ guid }}_ssh_conf"
+      ansible_ssh_extra_args: "{{ ansible_ssh_extra_args | default() }} -F {{ output_dir }}/{{ config }}_{{ guid }}_ssh_conf"
 
   - name: Run infra-aws-wait_for_linux_hosts role
     ansible.builtin.include_role:

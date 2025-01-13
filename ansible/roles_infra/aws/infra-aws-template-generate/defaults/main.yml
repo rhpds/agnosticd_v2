@@ -460,7 +460,7 @@ aws_ami_region_mapping:
     WIN2012R2: ami-0cabf723b1032f552 # Windows_Server-2012-R2_RTM-English-64Bit-Base-2020.12.09
     WIN2019: ami-04f95f8fff5f01620 # Windows_Server-2019-English-Full-Base-2020.12.09
 
-# DNSMapping is unlikely to change.  It's useful to keep env_type CF templates small
+# DNSMapping is unlikely to change.  It's useful to keep config CF templates small
 aws_dns_mapping:
   "us-east-1":
     domain: "us-east-1.compute.internal"

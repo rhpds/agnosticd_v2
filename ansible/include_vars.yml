@@ -18,13 +18,13 @@
       # Global default vars related to the cloud provider
       - cloud_providers/{{ cloud_provider }}_default_vars
       # Legacy env_vars.yml (replaced by default_vars.yml)
-      - configs/{{ env_type }}/env_vars
+      - configs/{{ config }}/env_vars
       # Default vars of the config
-      - configs/{{ env_type }}/default_vars
+      - configs/{{ config }}/default_vars
       # Default vars of the config, specific to a cloud provider
-      - configs/{{ env_type }}/default_vars_{{ cloud_provider }}
+      - configs/{{ config }}/default_vars_{{ cloud_provider }}
       # Lecacy secret vars file.
-      - configs/{{ env_type }}/env_secret_vars
+      - configs/{{ config }}/env_secret_vars
       __vars_file_extension:
       - yaml
       - yml

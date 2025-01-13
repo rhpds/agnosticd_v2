@@ -18,7 +18,7 @@
   vars:
     __find_update_params:
       files:
-        - configs/{{ env_type }}/update.yml
+        - configs/{{ config }}/update.yml
         - update_placeholder.yml
   ansible.builtin.import_playbook: >-
     {{ lookup('first_found', __find_update_params) }}

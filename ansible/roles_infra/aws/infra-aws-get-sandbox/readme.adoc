@@ -13,7 +13,7 @@ The following **input** variables are expected:
 | -
 | Yes
 
-| `env_type`
+| `config`
 | String
 | The config name of the environment
 | -

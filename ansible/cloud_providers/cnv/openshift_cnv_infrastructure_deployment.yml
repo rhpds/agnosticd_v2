@@ -58,8 +58,8 @@
   - name: set facts for remote access
     ansible.builtin.set_fact:
       ansible_ssh_extra_args: >-
-        {{ ansible_ssh_extra_args|d() }}
-        -F {{ output_dir }}/{{ env_type }}_{{ guid }}_ssh_conf
+        {{ ansible_ssh_extra_args | default() }}
+        -F {{ output_dir }}/{{ config }}_{{ guid }}_ssh_conf
 
   - name: Run infra-generic-wait_for_linux_hosts Role
     vars:

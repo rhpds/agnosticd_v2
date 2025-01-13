@@ -3,7 +3,7 @@
   amazon.aws.ec2_instance_info:
     filters:
       "tag:guid": "{{ guid }}"
-      "tag:env_type": "{{ env_type }}"
+      "tag:config": "{{ config }}"
       instance-state-name: stopped
   register: r_stopped_instances
 
@@ -24,7 +24,7 @@
   amazon.aws.ec2_instance_info:
     filters:
       "tag:guid": "{{ guid }}"
-      "tag:env_type": "{{ env_type }}"
+      "tag:config": "{{ config }}"
       instance-state-name: running
   register: r_running_instances
   until: r_running_instances.instances | length | int >= r_stopped_instances.instances | length | int

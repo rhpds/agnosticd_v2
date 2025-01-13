@@ -21,7 +21,7 @@
         ":g":
           S: "{{ guid }}"
         ":e":
-          S: "{{ env_type }}"
+          S: "{{ config }}"
     ansible.builtin.command: >-
       aws
       --region "{{ pool_region }}"
@@ -42,7 +42,7 @@
     block:
     - name: Debug message
       ansible.builtin.debug:
-        msg: "{{ guid }} - {{ env_type }} and {{ query1.Items[0].name.S }} already associated"
+        msg: "{{ guid }} - {{ config }} and {{ query1.Items[0].name.S }} already associated"
 
     - name: Save sandbox variables
       ansible.builtin.set_fact:
@@ -88,7 +88,7 @@
           ":gu":
             S: "{{ guid }}"
           ":en":
-            S: "{{ env_type }}"
+            S: "{{ config }}"
           ":ow":
             S: "{{ student_name | default('unknown') }}"
           ":email":

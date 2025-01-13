@@ -12,7 +12,7 @@
 - ansible.builtin.import_tasks: security_groups.yml
 
 - ansible.builtin.set_fact:
-    cloudformation_template: "{{output_dir}}/{{ env_type }}.{{ guid }}.{{cloud_provider}}_cloud_template"
+    cloudformation_template: "{{output_dir}}/{{ config }}.{{ guid }}.{{cloud_provider}}_cloud_template"
 
 - name: Print cloudformation_template
   ansible.builtin.debug:
@@ -131,7 +131,7 @@
   ansible.builtin.command: >-
     aws cloudformation validate-template
     --region {{ aws_region_final | default(aws_region) | default(region) | default('us-east-1') }}
-    --template-url https://s3.amazonaws.com/{{ bucket_templates }}/{{ env_type }}.{{ guid }}.{{ cloud_provider }}_cloud_template
+    --template-url https://s3.amazonaws.com/{{ bucket_templates }}/{{ config }}.{{ guid }}.{{ cloud_provider }}_cloud_template
   changed_when: false
   register: cloudformation_validation
   until: cloudformation_validation is succeeded

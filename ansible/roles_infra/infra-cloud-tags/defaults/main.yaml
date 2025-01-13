@@ -1,8 +1,8 @@
 ---
 default_cloud_tags:
-  Stack: "project {{ project_tag | default(env_type+'-'+guid) }}"
+  Stack: "project {{ project_tag | default(config+'-'+guid) }}"
   owner: "{{ email | default(user) | default('unknown') }}"
-  env_type: "{{ env_type }}"
+  config: "{{ config }}"
   guid: "{{ guid }}"
   uuid: "{{ uuid | default('none') }}"
 

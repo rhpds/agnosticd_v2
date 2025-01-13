@@ -41,7 +41,7 @@ ocp4_architecture_cluster: x86_64
 # Project Tag
 # -------------------------------------------------------------------
 
-project_tag: "{{ env_type }}-{{ guid }}"
+project_tag: "{{ config }}-{{ guid }}"
 
 # -------------------------------------------------------------------
 # AWS Networking

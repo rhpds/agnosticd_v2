@@ -13,14 +13,14 @@
 
   - name: Check for hosts_template file
     ansible.builtin.stat:
-      path: "../configs/{{ env_type }}/files/hosts_template.j2"
+      path: "../configs/{{ config }}/files/hosts_template.j2"
     register: r_template
 
   - name: Generate ansible hosts file
     when: r_template.stat.exists
     ansible.builtin.template:
-      src: "../configs/{{ env_type }}/files/hosts_template.j2"
-      dest: "{{ output_dir }}/hosts-{{ env_type }}-{{ guid }}"
+      src: "../configs/{{ config }}/files/hosts_template.j2"
+      dest: "{{ output_dir }}/hosts-{{ config }}-{{ guid }}"
       mode: "0664"
 
 - name: Step 00xxxxx bastion preparation for deployment
@@ -41,6 +41,6 @@
     - '"r_template" in hostvars.localhost'
     - hostvars.localhost.r_template.stat.exists
     ansible.builtin.copy:
-      src: "{{ output_dir }}/hosts-{{ env_type }}-{{ guid }}"
+      src: "{{ output_dir }}/hosts-{{ config }}-{{ guid }}"
       dest: /etc/ansible/hosts
       mode: "0664"

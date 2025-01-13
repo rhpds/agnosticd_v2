@@ -12,7 +12,7 @@
     region: "{{ aws_region_final | default(aws_region) }}"
     disable_rollback: false
     tags:
-      Stack: "project {{ env_type }}-{{ guid }}"
+      Stack: "project {{ config }}-{{ guid }}"
   register: cloudformation_result
   until: cloudformation_result is succeeded
   retries: "{{ cloudformation_retries | default(3) }}"

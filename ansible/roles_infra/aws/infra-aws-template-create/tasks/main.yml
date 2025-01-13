@@ -18,7 +18,7 @@
       when: cloud_tags_final is not defined
 
     - set_fact:
-        cloudformation_template: "{{output_dir}}/{{ env_type }}.{{ guid }}.{{cloud_provider}}_cloud_template"
+        cloudformation_template: "{{output_dir}}/{{ config }}.{{ guid }}.{{cloud_provider}}_cloud_template"
 
     - name: Wait a bit for the previous stack and child resources to be deleted
       pause:
@@ -54,7 +54,7 @@
       set_fact:
         cloudform_location: S3
         cloudform_args:
-          template_url: "https://s3.amazonaws.com/{{bucket_templates}}/{{env_type}}.{{guid}}.{{cloud_provider}}_cloud_template"
+          template_url: "https://s3.amazonaws.com/{{bucket_templates}}/{{config}}.{{guid}}.{{cloud_provider}}_cloud_template"
       when: stat_template.stat.size > 51200
 
     - name: Launch CloudFormation template ({{ cloudform_location }})
@@ -106,7 +106,7 @@
             AWS_SECRET_ACCESS_KEY: "{{aws_secret_access_key}}"
             AWS_DEFAULT_REGION: "{{aws_region_loop|d(aws_region)}}"
           s3_bucket:
-            name: "{{ env_type }}-{{ guid }}"
+            name: "{{ config }}-{{ guid }}"
             state: absent
             force: true
             region: "{{ aws_region_loop|d(aws_region) }}"
@@ -133,7 +133,7 @@
             region: "{{aws_region_loop|d(aws_region)}}"
             disable_rollback: true
             tags:
-              Stack: "project {{env_type}}-{{ guid }}"
+              Stack: "project {{config}}-{{ guid }}"
           tags:
             - destroying
             - destroy_cf_deployment

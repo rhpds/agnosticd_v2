@@ -1,6 +1,6 @@
 ---
 cloud_provider: none
-env_type: ocp-workloads
+config: ocp-workloads
 
 ocp_workloads:
   - ocp-workload-openshift-applier

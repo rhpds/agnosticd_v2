@@ -7,7 +7,7 @@
   amazon.aws.ec2_ami_info:
     owner: self
     filters:
-      tag:env_type: "{{ env_type }}"
+      tag:config: "{{ config }}"
       tag:version: "{{ osrelease | default(repo_version) }}"
       tag:stages: "*{{ custom_image_stage | default('unknown') }}*"
   register: r_amifacts

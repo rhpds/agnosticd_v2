@@ -1,6 +1,6 @@
 ---
 cloud_provider: none
-env_type: ocp-workloads
+config: ocp-workloads
 guid: test
 
 infra_workloads:
