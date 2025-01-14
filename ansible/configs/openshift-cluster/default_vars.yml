@@ -28,11 +28,7 @@ install_student_user: true
 # It will be used by the bastion-student-user role and created on the bastion
 student_name: lab-user
 
-# TODO: What does this really do besides run the role?
-set_env_authorized_key: true
-env_authorized_key: "{{ guid }}key"
-
-# Run the bastion-lite role
+# Run the bastion role
 install_bastion: true
 
 # This config was written with the expectation of using python3
@@ -46,7 +42,7 @@ all_use_python3: true
 # When enabled a requirements.yml must exist in the config to specify the ftl-injector role and tag.
 install_ftl: false
 
-# Only satellite is supported for RHEL 8 and newer
+# Only satellite is supported for RHEL 9 and newer
 repo_method: satellite
 
 # These vars are needed and should come from secrets:

@@ -1,7 +1,8 @@
 VARS=openshift-cluster-417
-SANDBOX=918
+SANDBOX=587
 PLAYBOOK=main.yml
 GUID=wk417
+OUTPUT_DIR_ROOT=../agnosticd-v2-output
 OUTPUT_DIR=$(GUID)
 PLAYBOOK_DIR=ansible
 
@@ -39,8 +40,9 @@ env: ## Confirm env setup
 	@-env | grep ANSIBLE || echo "None"
 
 ansible-navigator-execute: ## Execute ansible-playbook with PLAYBOOK of choice
-	mkdir -p $(OUTPUT_DIR); \
-		ansible-navigator run $(PLAYBOOK_DIR)/$(PLAYBOOK) \
+	mkdir -p $(OUTPUT_DIR_ROOT)/$(OUTPUT_DIR); \
+	export ANSIBLE_LOG_PATH=/output_dir_root/$(OUTPUT_DIR)/$(GUID).log; \
+	ansible-navigator run $(PLAYBOOK_DIR)/$(PLAYBOOK) \
 		--extra-vars ACTION=provision \
 		--extra-vars @/vars/$(VARS).yml \
 		--extra-vars @/secrets/$(SECRETS).yml \
@@ -51,9 +53,9 @@ ansible-navigator-execute: ## Execute ansible-playbook with PLAYBOOK of choice
 		$(USER_EXTRA_ARGS) $(EXTRA_ARGS)
 
 ansible-navigator-destroy: ## Execute ansible-playbook with PLAYBOOK of choice
-	mkdir -p $(OUTPUT_DIR); \
-	export ANSIBLE_LOG_PATH=$(OUTPUT_DIR)/$(GUID).log; \
-		ansible-navigator run $(PLAYBOOK_DIR)/$(PLAYBOOK) \
+	mkdir -p $(OUTPUT_DIR_ROOT)/$(OUTPUT_DIR); \
+	export ANSIBLE_LOG_PATH=$(OUTPUT_DIR_ROOT)/$(OUTPUT_DIR)/$(GUID).log; \
+	ansible-navigator run $(PLAYBOOK_DIR)/$(PLAYBOOK) \
 		--extra-vars ACTION=destroy \
 		--extra-vars @/vars/$(VARS).yml \
 		--extra-vars @/secrets/$(SECRETS).yml \

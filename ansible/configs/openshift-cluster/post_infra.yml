@@ -16,7 +16,7 @@
     block:
     - name: Create secret for SSH Key
       ansible.builtin.include_role:
-        name: infra-gcp-ssh-key
+        name: infra_gcp_ssh_key
 
   - name: AWS Post Infrastructure
     when: cloud_provider is match("aws")

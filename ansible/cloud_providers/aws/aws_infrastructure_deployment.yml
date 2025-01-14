@@ -8,15 +8,15 @@
   gather_facts: false
   become: false
   tasks:
-  - name: Run infra-images
+  - name: Run infra_images
     ansible.builtin.include_role:
-      name: infra-images
+      name: infra_images
 
-  - name: Run infra-aws-capacity-reservation
+  - name: Run infra_aws_capacity_reservation
     vars:
       ACTION: provision
     ansible.builtin.include_role:
-      name: infra-aws-capacity-reservation
+      name: infra_aws_capacity_reservation
 
   - name: Rerun detection
     when: agnosticd_aws_capacity_reservation_results.reservations | default({}) | length > 0
@@ -27,14 +27,14 @@
 
     - name: Run infra-images again to use the proper region selected by the reservations
       ansible.builtin.include_role:
-        name: infra-images
+        name: infra_images
 
-  - name: Run infra-aws-open-environment Role
+  - name: Run infra_aws-open_environment role
     when: agnosticd_open_environment | default(false) | bool
     vars:
       ACTION: provision
     ansible.builtin.include_role:
-      name: infra-aws-open-environment
+      name: infra_aws
 
   - name: Create SSH provision key
     when:
@@ -51,20 +51,20 @@
   - name: Create keypair in AWS
     when: instances | default([]) | length > 0
     ansible.builtin.include_role:
-      name: infra-aws-ssh-key
+      name: infra_aws_ssh_key
 
-  - name: Run infra-aws-template-generate Role
+  - name: Run infra_aws_template_generate role
     ansible.builtin.include_role:
-      name: infra-aws-template-generate
+      name: infra_aws_template_generate
 
-  - name: Run infra-aws-template-create Role
+  - name: Run infra_aws_template_create role
     when: cloudformation_enabled | default(true) | bool
     vars:
       aws_region_loop: "{{ aws_region }}"
     ansible.builtin.include_role:
-      name: infra-aws-template-create
+      name: infra_aws_template_create
 
-  - name: Run infra-aws-template-create Role into FallBack region
+  - name: Run infra_aws_template_create role into FallBack region
     when:
     - cloudformation_enabled | default(true) | bool
     - fallback_regions is defined
@@ -72,7 +72,7 @@
     vars:
       aws_region_loop: "{{ item }}"
     ansible.builtin.include_role:
-      name: infra-aws-template-create
+      name: infra_aws_template_create
     loop: "{{ fallback_regions }}"
 
   - name: Report Cloudformation error
@@ -97,16 +97,16 @@
       when: aws_region_final is not defined
       ansible.builtin.include_tasks: aws_detect_region_tasks.yml
 
-    - name: Run infra-aws-create-inventory role
+    - name: Run infra_aws_create_inventory role
       ansible.builtin.include_role:
-        name: infra-aws-create-inventory
+        name: infra_aws_create_inventory
 
     - name: Run common SSH config generator role
       when:
       - groups.bastions is defined
       - groups.bastions | length > 0
       ansible.builtin.include_role:
-        name: infra-common-ssh-config-generate
+        name: infra_common_ssh_config_generate
 
 - name: Include global vars again, this time for all hosts now that the inventory is built
   ansible.builtin.import_playbook: ../../include_vars.yml
@@ -124,13 +124,13 @@
       aws_region_final: "{{ hostvars['localhost'].aws_region_final }}"
       ansible_ssh_extra_args: "{{ ansible_ssh_extra_args | default() }} -F {{ output_dir }}/{{ config }}_{{ guid }}_ssh_conf"
 
-  - name: Run infra-aws-wait-for-linux-hosts role
+  - name: Run infra_aws_wait_for_linux_hosts role
     ansible.builtin.include_role:
-      name: infra-aws-wait-for-linux-hosts
+      name: infra_aws_wait_for_linux_hosts
 
-  - name: Run infra-aws-linux-set-hostname role
+  - name: Run infra_aws_linux_set_hostname role
     ansible.builtin.include_role:
-      name: infra-aws-linux-set-hostname
+      name: infra_aws_linux_set_hostname
 
   - name: Add authorized_keys
     when: >-
@@ -148,7 +148,7 @@
   - name: Set facts for Windows remote access
     when: infra_windows_connection_facts_type is defined
     ansible.builtin.include_role:
-      name: infra-windows-connection-facts
+      name: infra_windows_connection_facts
 
   - name: Set facts for remote access
     when: infra_windows_connection_facts_type is not defined
@@ -162,9 +162,9 @@
       ansible_winrm_server_cert_validation: ignore
       aws_region_final: "{{ hostvars['localhost'].aws_region_final }}"
 
-  - name: Run infra-aws-wait-for-windows-hosts role
+  - name: Run infra_aws_wait_for_windows_hosts role
     ansible.builtin.include_role:
-      name: infra-aws-wait-for-windows-hosts
+      name: infra_aws_wait_for_windows_hosts
 
   - name: Set output_dir for all Windows hosts
     ansible.builtin.set_fact:

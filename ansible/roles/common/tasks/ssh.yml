@@ -1,7 +1,7 @@
 ---
 - name: Deactivate DNS lookup in sshd
-  lineinfile:
+  ansible.builtin.lineinfile:
     line: UseDNS no
     path: /etc/ssh/sshd_config
     regexp: '^#? *UseDNS '
-  notify: restart_sshd
+  notify: "Restart sshd"

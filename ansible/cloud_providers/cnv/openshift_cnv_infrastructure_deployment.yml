@@ -16,11 +16,11 @@
     ansible.builtin.include_role:
       name: create_ssh_provision_key
 
-  - name: Run infra-openshift-cnv-resources Role
+  - name: Run infra_openshift_cnv_resources role
     vars:
       ACTION: provision
     ansible.builtin.include_role:
-      name: infra-openshift-cnv-resources
+      name: infra_openshift_cnv_resources
 
 - name: Step 001.2 Create Inventory and SSH config setup
   hosts: localhost
@@ -33,16 +33,16 @@
     vars:
       _dns_state: present
     ansible.builtin.include_role:
-      name: infra-dns
+      name: infra_dns
 
-  - name: Run infra-openshift-cnv-create-inventory Role
+  - name: Run infra_openshift_cnv_create_inventory Role
     ansible.builtin.import_role:
-      name: infra-openshift-cnv-create-inventory
+      name: infra_openshift_cnv_create_inventory
 
   - name: Run Common SSH Config Generator Role
     when: "instances | default(false) and 'bastions' in groups"
     ansible.builtin.import_role:
-      name: infra-common-ssh-config-generate
+      name: infra_common_ssh_config_generate
 
 - name: Include global vars again, this time for all hosts now that the inventory is built
   import_playbook: ../include_vars.yml
@@ -61,7 +61,7 @@
         {{ ansible_ssh_extra_args | default() }}
         -F {{ output_dir }}/{{ config }}_{{ guid }}_ssh_conf
 
-  - name: Run infra-generic-wait-for-linux-hosts Role
+  - name: Run infra_generic_wait_for_linux_hosts Role
     vars:
       infra_generic_wait_for_linux_hosts_delay: 30
       infra_generic_wait_for_linux_hosts_sleep: 10
@@ -69,7 +69,7 @@
       infra_generic_wait_for_linux_hosts_timeout: 1200
       infra_generic_wait_for_linux_hosts_retries: 10
     ansible.builtin.include_role:
-      name: infra-generic-wait-for-linux-hosts
+      name: infra_generic_wait_for_linux_hosts
 
   - name: Add authorized_keys
     when: >-

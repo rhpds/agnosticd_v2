@@ -24,11 +24,11 @@
   gather_facts: false
   become: false
   tasks:
-  - name: Detect region for EC2
+  - name: Detect region for AWS
     when:
-    - cloud_provider == 'ec2'
+    - cloud_provider == 'aws'
     - target_regions is not defined
-    ansible.builtin.include_tasks: cloud_providers/ec2_detect_region_tasks.yml
+    ansible.builtin.include_tasks: cloud_providers/aws_detect_region_tasks.yml
 
 - name: Call cloud provider destroy logic
   ansible.builtin.import_playbook: >-

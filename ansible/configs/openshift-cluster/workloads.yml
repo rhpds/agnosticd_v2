@@ -12,7 +12,7 @@
     ansible.builtin.set_fact:
       ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python
 
-  - name: Install infra workloads
+  - name: Install workloads
     when: infra_workloads | default("") | length > 0
     ansible.builtin.include_role:
       name: "{{ workload_loop_var }}"

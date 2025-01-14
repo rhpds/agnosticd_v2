@@ -18,25 +18,20 @@
     ansible.builtin.include_role:
       name: locate_env_authorized_key
 
-  - name: Run infra-aws-create-inventory Role
+  - name: Run infra_aws_create_inventory role
     when: cloud_provider == 'aws'
     ansible.builtin.include_role:
-      name: infra-aws-create-inventory
-
-  - name: Run infra-osp-create-inventory Role
-    when: cloud_provider == 'osp'
-    ansible.builtin.include_role:
-      name: infra-osp-create-inventory
+      name: infra_aws_create_inventory
 
   - name: Azure post start actions
     when: cloud_provider == 'azure'
     ansible.builtin.include_role:
-      name: infra-azure-create-inventory
+      name: infra_azure_create_inventory
 
-  - name: Run infra-openshift-cnv-create-inventory Role
+  - name: Run infra_openshift_cnv_create_inventory role
     when: cloud_provider == 'openshift_cnv'
     ansible.builtin.include_role:
-      name: infra-openshift-cnv-create-inventory
+      name: infra_openshift_cnv_create_inventory
 
 - name: Set ansible_ssh_extra_args
   hosts:

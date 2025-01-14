@@ -10,7 +10,7 @@
   - step005
   tasks:
   - name: Destroy Workloads on cluster(s)
-    include_role:
+    ansible.builtin.include_role:
       name: openshift_workloads
     vars:
       ACTION: destroy

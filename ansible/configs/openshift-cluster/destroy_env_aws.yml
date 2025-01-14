@@ -24,9 +24,9 @@
       stack_status: >-
         {{ _stack_description.stack_status | default(_stack_description.StackStatus) }}
 
-  - name: Run infra-aws-create-inventory role
+  - name: Run infra_aws_create_inventory role
     ansible.builtin.include_role:
-      name: infra-aws-create-inventory
+      name: infra_aws_create_inventory
 
   - name: Create local ssh provision facts (key already exists)
     when: ssh_provision_key_name is undefined
@@ -38,7 +38,7 @@
     - groups["bastions"] is defined
     - groups["bastions"] | length > 0
     ansible.builtin.include_role:
-      name: infra-common-ssh-config-generate
+      name: infra_common_ssh_config_generate
 
 - name: Set ssh extra args for all hosts, use ssh_config just created
   hosts: all
@@ -50,7 +50,7 @@
     ansible.builtin.set_fact:
       ansible_ssh_extra_args: "{{ ansible_ssh_extra_args | default() }} -F {{ hostvars['localhost'].ansible_ssh_config }}"
 
-- name: Start all EC2 instances if they are stopped
+- name: Start all AWS instances if they are stopped
   hosts: localhost
   connection: local
   gather_facts: false
@@ -71,10 +71,10 @@
   run_once: true
   become: false
   tasks:
-  - name: Remove ocp workloads
+  - name: Remove workloads
     when: remove_workloads | default("") | length > 0
     block:
-    - name: Invoke roles to remove ocp workloads
+    - name: Invoke roles to remove workloads
       ansible.builtin.include_role:
         name: "{{ workload_loop_var }}"
       vars:
@@ -85,7 +85,7 @@
 
 # Call Remove Workloads for workloads that need to clean up "other" infrastructure.
 # Workloads that need to be run on the bastion
-- name: Remove workloads
+- name: Remove workloads from bastion
   hosts: bastions
   gather_facts: false
   run_once: true
@@ -103,10 +103,10 @@
       ansible.builtin.set_fact:
         ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python
 
-    - name: Remove ocp workloads on bastion
+    - name: Remove workloads on bastion
       when: remove_workloads_bastion | default("") | length > 0
       block:
-      - name: Invoke roles to remove ocp workloads
+      - name: Invoke roles to remove workloads
         ansible.builtin.include_role:
           name: "{{ workload_loop_var }}"
         vars:
@@ -165,12 +165,12 @@
   - name: Call role to destroy the OpenShift cluster
     when: bwait is successful
     ansible.builtin.include_role:
-      name: host-ocp4-destroy
+      name: host_ocp4_destroy
 
   - name: Remove ROSA clusters via CLI
     when: rosa_delete_clusters_cli_enable | default(true) | bool
     ansible.builtin.include_role:
-      name: rosa-delete-clusters-cli
+      name: rosa_delete_clusters_cli
 
 - name: Import default cloud provider destroy playbook
   ansible.builtin.import_playbook: "../../cloud_providers/{{ cloud_provider }}_destroy_env.yml"

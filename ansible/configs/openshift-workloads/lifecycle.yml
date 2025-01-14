@@ -15,16 +15,16 @@
       msg: ACTION must be defined
 
   - name: Set facts for OpenShift cluster(s)
-    include_tasks: set_cluster_facts.yml
+    ansible.builtin.include_tasks: set_cluster_facts.yml
 
   - name: Run Workloads to perform {{ ACTION }}
+    vars:
+      ACTION: destroy
+    ansible.builtin.include_tasks: run_workload_on_clusters.yml
     loop: "{{ cluster_workloads }}"
     loop_control:
       loop_var: __workload
       label: "{{ __workload.name }}"
-    include_tasks: run_workload_on_clusters.yml
-    vars:
-      ACTION: destroy
 
 - name: Cleanup
   ansible.builtin.import_playbook: cleanup.yml
