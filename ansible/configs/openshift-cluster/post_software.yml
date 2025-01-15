@@ -10,9 +10,9 @@
     ansible.builtin.debug:
       msg: "Post-Software Steps starting"
 
-  - name: Set Ansible Python interpreter to k8s virtualenv
-    ansible.builtin.set_fact:
-      ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python
+  # - name: Set Ansible Python interpreter to k8s virtualenv
+  #   ansible.builtin.set_fact:
+  #     ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python
 
   - name: Setup cluster-admin service account
     when: openshift_cluster_admin_service_account_enable | bool

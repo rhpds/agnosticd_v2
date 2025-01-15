@@ -60,100 +60,9 @@ infra_images_predefined:
     aws_filters:
       is-public: false
 
-  RHEL8GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-8.*_HVM-*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL87GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-8.7.*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL86GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-8.6.*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL85GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-8.5.*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL84GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-8.4.*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL83GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-8.3_*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL82GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-8.2_*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL7GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-7.*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL79GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-7.9_*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL78GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-7.8_*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
-  RHEL77GOLD-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-7.7_*Access*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: false
-
   RHEL9-latest:
     owner: "{{ infra_images_redhat_owner_id }}"
     name: RHEL-9.*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: true
-
-  RHEL8-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-8.*_HVM-*
-    architecture: "{{ _infra_images_arch }}"
-    aws_filters:
-      is-public: true
-
-  RHEL7-latest:
-    owner: "{{ infra_images_redhat_owner_id }}"
-    name: RHEL-7.*
     architecture: "{{ _infra_images_arch }}"
     aws_filters:
       is-public: true
@@ -162,11 +71,3 @@ infra_images_predefined:
   RHEL9-default:
   - RHEL9GOLD-latest
   - RHEL9-latest
-
-  RHEL8-default:
-  - RHEL8GOLD-latest
-  - RHEL8-latest
-
-  RHEL7-default:
-  - RHEL7GOLD-latest
-  - RHEL7-latest

@@ -31,12 +31,6 @@ student_name: lab-user
 # Run the bastion role
 install_bastion: true
 
-# This config was written with the expectation of using python3
-# Several of the roles that it depends on only work with python2,
-# so they had to be modified to handle python3 as well. Use this
-# var so that it is passed along and influences how those roles run.
-all_use_python3: true
-
 # FTL is used for grading and solving. It will pull in the external ftl-injector role.
 # This might be enabled when we have solvers to run or graders for ILT
 # When enabled a requirements.yml must exist in the config to specify the ftl-injector role and tag.
@@ -80,7 +74,7 @@ worker_instance_count: 2
 
 # Use 4.16 for latest available release in the `stable-4.12` directory.
 # Use 4.16.1 for exactly the specified release
-ocp4_installer_version: "4.16"
+host_ocp4_installer_version: "4.16"
 
 # See role host-ocp4-installer for additional OpenShift 4 Installer options
 # E.g. OpenShift Cluster processor architectore or OpenShift installer download location
@@ -98,11 +92,7 @@ ocp4_base_domain: example.opentlc.com
 # Third Party Network Plugins for OpenShift
 # - Calico (tested on OCP 4.7)
 #
-ocp4_network_type: OVNKubernetes
-
-# User info settings
-ocp4_cluster_show_default_user_info: true
-ocp4_cluster_show_access_user_info: "{{ ocp4_cluster_show_default_user_info }}"
+host_ocp4_installer_network_type: OVNKubernetes
 
 # Set to true to enable creating a cluster-admin service account during installation
 openshift_cluster_admin_service_account_enable: false
@@ -110,7 +100,7 @@ openshift_cluster_admin_service_account_enable: false
 # YAML List of Infrastructure Workloads.
 # REQUIRES Ansible 2.7+ on the deployer host
 # Empty by default - to be set by specific configurations
-infra_workloads: []
+workloads: []
 
 # Suggested infra workloads for a base workshop cluster:
 #  - ocp4_workload_cert_manager

@@ -1,8 +1,4 @@
 ---
-become_override: false
-ocp_username: opentlc-mgr
-silent: false
-
 # Ignore errors when requesting certificates
 # This allows provisioning to continue even if requesting certificates fails
 ocp4_workload_cert_manager_ignore_errors: false
@@ -25,15 +21,20 @@ ocp4_workload_cert_manager_wait_after_api_cert_setup: 12
 ocp4_workload_cert_manager_wait_for_rollout: false
 
 # Set to the cloud provider to be used:
-# Valid values are: ec2, azure, gcp, osp, vmc
-# NOTE: Right now only ec2, gcp and azure are implemented
-ocp4_workload_cert_manager_cloud_provider: "{{ cloud_provider if cloud_provider in ['ec2', 'gcp', 'azure'] else 'ec2' }}"
+# Valid values are: aws, azure, gcp, vmc
+ocp4_workload_cert_manager_cloud_provider: "{{ cloud_provider if cloud_provider in ['gcp', 'azure'] else 'aws' }}"
 
-# Set to either letsencrypt or zerossl
+# Set to either 'letsencrypt' or 'zerossl'
 ocp4_workload_cert_manager_provider: letsencrypt
 
 # This is the default API for letsencrypt
 ocp4_workload_cert_manager_acme_url: https://acme-v02.api.letsencrypt.org/directory
+
+# ---------------------------------------------------------------
+# Retries (and restart cert manager if failed)
+# ---------------------------------------------------------------
+ocp4_workload_cert_manager_ingress_cert_max_retries: 3
+ocp4_workload_cert_manager_api_cert_max_retries: 3
 
 # ---------------------------------------------------------------
 # Settings for ZeroSSL
@@ -43,17 +44,17 @@ ocp4_workload_cert_manager_zerossl_eab_key_id: ""
 ocp4_workload_cert_manager_zerossl_hmac_key: ""
 
 # ---------------------------------------------------------------
-# Settings for EC2
+# Settings for AWS
 # ---------------------------------------------------------------
 # Set from AgnosticV to the actual AWS credentials
 # region this is being deployed to. E.g.
-ocp4_workload_cert_manager_ec2_region: "{{ aws_region }}"
-ocp4_workload_cert_manager_ec2_access_key_id: "{{ hostvars.localhost.route53user_access_key }}"
-ocp4_workload_cert_manager_ec2_secret_access_key: "{{ hostvars.localhost.route53user_secret_access_key }}"
-ocp4_workload_cert_manager_ec2_hostedzoneid: "{{ hostvars.localhost.route53_aws_zone_id | default ('') }}"
+ocp4_workload_cert_manager_aws_region: "{{ aws_region }}"
+ocp4_workload_cert_manager_aws_access_key_id: "{{ hostvars.localhost.route53user_access_key }}"
+ocp4_workload_cert_manager_aws_secret_access_key: "{{ hostvars.localhost.route53user_secret_access_key }}"
+ocp4_workload_cert_manager_aws_hostedzoneid: "{{ hostvars.localhost.route53_aws_zone_id | default('') }}"
 
 # If a HostedZoneID is provided use that one, otherwise determine dynamically
-#ocp4_workload_cert_manager_ec2_hostedzoneid: ""
+# ocp4_workload_cert_manager_aws_hostedzoneid: ""
 
 # ---------------------------------------------------------------
 # Settings for GCP
@@ -77,20 +78,15 @@ ocp4_workload_cert_manager_azure_resource_group_name: "{{ az_dnszone_resource_gr
 ocp4_workload_cert_manager_azure_subscription_id: "{{ azure_subscription_id }}"
 ocp4_workload_cert_manager_azure_tenant_id: "{{ azure_tenant }}"
 
-
 # ---------------------------------------------------------------
 # Operator settings
 # ---------------------------------------------------------------
 ocp4_workload_cert_manager_channel: stable-v1.14
 ocp4_workload_cert_manager_starting_csv: ""
-# ocp4_workload_cert_manager_starting_csv: cert-manager-operator.v1.13.0
-ocp4_workload_cert_manager_automatic_install_plan_approval: true
+
 ocp4_workload_cert_manager_use_catalog_snapshot: false
 ocp4_workload_cert_manager_catalogsource_name: ""
 ocp4_workload_cert_manager_catalog_snapshot_image: ""
 ocp4_workload_cert_manager_catalog_snapshot_image_tag: ""
-
-# Internal vars. Don't set
-_ocp4_workload_cert_manager_api_hostname: ""
-_ocp4_workload_cert_manager_wildcard_domain: ""
-_ocp4_workload_cert_manager_hostedzoneid: ""
+# ocp4_workload_cert_manager_starting_csv: cert-manager-operator.v1.14.0
+ocp4_workload_cert_manager_automatic_install_plan_approval: true

@@ -1,12 +1,24 @@
-- name: Generate SSH keys
-  ansible.builtin.shell: ssh-keygen -b 2048 -t rsa -f /home/{{ ansible_user }}/.ssh/id_rsa -q -N ""
-  args:
-    creates: /home/{{ ansible_user }}/.ssh/id_rsa
+---
+- name: Generate SSH keys for installer
+  community.crypto.openssh_keypair:
+    comment: OpenShift installer
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+    path: "/home/{{ ansible_user }}/.ssh/id_rsa"
+    regenerate: partial_idempotence
+    size: 2048
+    type: rsa
 
-- name: Generate SSH pub key
-  ansible.builtin.shell: ssh-keygen -y -f /home/{{ ansible_user }}/.ssh/id_rsa > /home/{{ ansible_user }}/.ssh/id_rsa.pub
-  args:
-    creates: /home/{{ ansible_user }}/.ssh/id_rsa.pub
+# - name: Generate SSH keys
+#   ansible.builtin.shell: ssh-keygen -b 2048 -t rsa -f /home/{{ ansible_user }}/.ssh/id_rsa -q -N ""
+#   args:
+#     creates: /home/{{ ansible_user }}/.ssh/id_rsa
+
+# - name: Generate SSH pub key
+#   ansible.builtin.shell: ssh-keygen -y -f /home/{{ ansible_user }}/.ssh/id_rsa > /home/{{ ansible_user }}/.ssh/id_rsa.pub
+#   args:
+#     creates: /home/{{ ansible_user }}/.ssh/id_rsa.pub
 
 - name: Slurp public key
   ansible.builtin.slurp:

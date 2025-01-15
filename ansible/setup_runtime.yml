@@ -27,6 +27,7 @@
     ansible.builtin.assert:
       that: cloud_provider in agnosticd_cloud_providers
       msg: "Cloud provider {{ cloud_provider }} is not supported."
+      quiet: true
 
 - name: Setup output directory
   ansible.builtin.import_playbook: setup_output_dir.yml

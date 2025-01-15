@@ -49,6 +49,7 @@ ansible-navigator-execute: ## Execute ansible-playbook with PLAYBOOK of choice
 		--extra-vars @/secrets/secrets.yml \
 		--extra-vars guid=$(GUID) \
 		--extra-vars output_dir=/output_dir_root/$(OUTPUT_DIR) \
+		--extra-vars host_ocp4_installer_install_openshift=false \
 		--mode stdout \
 		$(USER_EXTRA_ARGS) $(EXTRA_ARGS)
 

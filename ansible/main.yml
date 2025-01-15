@@ -74,7 +74,7 @@
 ##################################################################################
 ##################################################################################
 
-- name: Environment '{{ config }}' specific software playbook
+- name: Environment specific software playbook ('{{ config }}')
   ansible.builtin.import_playbook: "configs/{{ config }}/software.yml"
 
 - name: Software Playbook '{{ software_to_deploy | default('none') }}'
@@ -87,7 +87,7 @@
 ################################################################################
 
 - name: Post software tasks
-  ansible.builtin.import_playbook: "./configs/{{ config }}/post_software.yml"
+  ansible.builtin.import_playbook: "configs/{{ config }}/post_software.yml"
 
 - name: Export inventory
   vars:

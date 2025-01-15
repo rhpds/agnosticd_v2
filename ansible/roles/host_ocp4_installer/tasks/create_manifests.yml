@@ -3,23 +3,10 @@
   become: false
   ansible.builtin.command: openshift-install create manifests --dir=/home/{{ ansible_user }}/{{ cluster_name }}
 
-# For Windows Nodes OVN is required.
-# For 4.6 this requires an install workaround to generate
-# manifests and then change the manifests
-# For SDN this is not necessary. Regardless the installation will either generate
-# manifests if there aren't any (default) or use the updated ones (OVN)
-- name: Create install workaround manifests/cluster-network-03-config.yml for OVN
-  when: ocp4_network_ovn_install_workaround | bool
-  ansible.builtin.copy:
-    src: cluster-network-03-config.yml
-    dest: "/home/{{ ansible_user }}/{{ cluster_name }}/manifests/cluster-network-03-config.yml"
-    owner: "{{ ansible_user }}"
-    mode: ug=rw,o=
-
 # This downloads all the extra manifests which are maintained by Tigera
 # Can't use unarchive module as it does not handle .gz files that do not contain a .tar archive.
 - name: Set up with Calico
-  when: ocp4_network_type | default("OVNKubernetes") == "Calico"
+  when: host_ocp4_installer_network_type | default("OVNKubernetes") == "Calico"
   block:
   - name: Make sure manifests dir exists
     ansible.builtin.file:
@@ -35,8 +22,8 @@
       mode: "0664"
     retries: 3
     delay: 3
-    register: result
-    until: result is not failed
+    register: r_result
+    until: r_result is not failed
 
   - name: Extract Project Calico manifest files
     ansible.builtin.shell:

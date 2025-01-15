@@ -1,10 +1,4 @@
 ---
-# Implement your Workload deployment tasks here
-
-- name: Setting up workload for user
-  ansible.builtin.debug:
-    msg: "Setting up workload for user ocp_username = {{ ocp_username }}"
-
 - name: Install Red Hat Cert Manager operator
   ansible.builtin.include_role:
     name: install_operator
@@ -25,9 +19,9 @@
     install_operator_catalogsource_image: "{{ ocp4_workload_cert_manager_catalog_snapshot_image | default('') }}"
     install_operator_catalogsource_image_tag: "{{ ocp4_workload_cert_manager_catalog_snapshot_image_tag | default('') }}"
 
-- name: Update CertManager for EC2/GCP/Azure to use external DNS
+- name: Update CertManager for AWS/GCP/Azure to use external DNS
   when: >
-    ocp4_workload_cert_manager_cloud_provider in ["ec2", "gcp", "azure"]
+    ocp4_workload_cert_manager_cloud_provider in ["aws", "gcp", "azure"]
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'certmanager.yaml.j2') }}"
@@ -97,14 +91,10 @@
 
 - name: Install Ingress controller certificate
   when: ocp4_workload_cert_manager_install_ingress_certificates | bool
-  vars:
-    ingress_cert_retry_counter: 0
-    ingress_cert_max_retries: 3
   block:
-
   - name: Run ingress controller certificate check task
     ansible.builtin.include_tasks: cert_manager_ingress_cert_check.yml
-    with_sequence: start=0 end={{ ingress_cert_max_retries }}
+    with_sequence: start=0 end={{ ocp4_workload_cert_manager_ingress_cert_max_retries }}
 
   - name: Update Ingress controller to use certificate
     when: not r_certificate_ingress is failed
@@ -114,14 +104,10 @@
 
 - name: Install API Server certificate
   when: ocp4_workload_cert_manager_install_api_certificates | bool
-  vars:
-    api_cert_retry_counter: 0
-    api_cert_max_retries: 3
   block:
-
   - name: Run API certificate check task
     ansible.builtin.include_tasks: cert_manager_api_cert_check.yml
-    with_sequence: start=0 end={{ api_cert_max_retries }}
+    with_sequence: start=0 end={{ ocp4_workload_cert_manager_api_cert_max_retries }}
 
   - name: API Certificate successfull
     when: not r_certificate_api is failed
@@ -139,7 +125,7 @@
       ansible.builtin.pause:
         minutes: "{{ ocp4_workload_cert_manager_wait_after_api_cert_setup | int }}"
 
-    - name: Find all Kube Configs
+    - name: Find all Kube configs
       become: true
       ansible.builtin.find:
         file_type: file
@@ -152,7 +138,7 @@
         recurse: true
       register: r_config_files
 
-    - name: Fix Kube Configs
+    - name: Fix Kube configs
       become: true
       ansible.builtin.replace:
         path: "{{ item.path }}"
@@ -168,9 +154,3 @@
       retries: 30
       delay: 10
       until: not r_ingress_config.failed
-
-# Leave this as the last task in the playbook.
-- name: Workload tasks complete
-  when: not silent | bool
-  ansible.builtin.debug:
-    msg: "Workload Tasks completed successfully."

@@ -27,9 +27,6 @@
     src: "{{ cloudformation_template_src }}"
     dest: "{{ cloudformation_template }}"
     mode: "0664"
-  tags:
-  - aws_infrastructure_deployment
-  - gen_cf_template
 
 - name: Stop if debugging template
   when: debug_template | default(false) | bool
@@ -41,9 +38,6 @@
   ansible.builtin.stat:
     path: "{{ cloudformation_template }}"
   register: stat_template
-  tags:
-  - aws_infrastructure_deployment
-  - gen_cf_template
 
 - name: Copy template to S3
   when: stat_template.stat.size > 51200
@@ -119,9 +113,6 @@
   until: r_cloudformation_validation is succeeded
   retries: "{{ cloudformation_retries }}"
   delay: 20
-  tags:
-  - aws_infrastructure_deployment
-  - validate_cf_template
 
 - name: Validate cloudformation template with validate-template (S3)
   when: stat_template.stat.size > 51200
@@ -138,8 +129,3 @@
   until: r_cloudformation_validation is succeeded
   retries: "{{ cloudformation_retries }}"
   delay: 20
-  tags:
-    - aws_infrastructure_deployment
-    - validate_cf_template
-
-######################### Launch CF Template
