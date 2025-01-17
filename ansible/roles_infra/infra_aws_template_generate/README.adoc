@@ -1,6 +1,6 @@
 = CloudFormation template generation
 
-When creating a config, you can either have the config under the `configs/{{config}}/files/cloud_providers/ec2_cloud_template.j2`, or use the default template.
+When creating a config, you can either have the config under the `configs/{{config}}/files/cloud_providers/aws_cloud_template.j2`, or use the default template.
 
 If you choose to use the default template, you can still customize it to your needs.
 

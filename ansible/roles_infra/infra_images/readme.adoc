@@ -8,7 +8,7 @@ This role finds cloud images and assign resulting object to the `agnosticd_image
 - hosts: localhost
   gather_facts: false
   vars:
-    cloud_provider: ec2
+    cloud_provider: aws
     aws_region: us-west-2
     image_owner_id_redhat: 309956199498
     instances:

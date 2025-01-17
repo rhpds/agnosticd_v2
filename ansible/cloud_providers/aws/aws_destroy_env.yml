@@ -1,6 +1,6 @@
 ---
-- name: Include variables
-  ansible.builtin.import_playbook: ../include_vars.yml
+# - name: Include variables
+#   ansible.builtin.import_playbook: ../../include_vars.yml
 
 - name: Delete Infrastructure
   hosts: localhost

@@ -40,10 +40,10 @@ infra_windows_connection_facts_ansible_become: false
 infra_windows_connection_facts_ansible_connection: winrm
 infra_windows_connection_facts_ansible_host: "{{ public_dns_name }}"
 infra_windows_connection_facts_ansible_password: >-
-  "{{ default(hostvars['localhost'].windows_password) | default(hostvars['localhost'].generated_windows_password) }}"
+  "{{ default(hostvarslocalhost.windows_password) | default(hostvars.localhost.generated_windows_password) }}"
 infra_windows_connection_facts_ansible_port: 5986
 infra_windows_connection_facts_ansible_user: Administrator
 infra_windows_connection_facts_cert_validation: ignore
-infra_windows_connection_facts_aws_region_final: "{{ hostvars['localhost'].aws_region_final }}"
+infra_windows_connection_facts_aws_region_final: "{{ hostvars.localhost.aws_region_final }}"
 infra_windows_connection_facts_ansible_shell_type: cmd
 infra_windows_connection_facts_ansible_ssh_common_args: '-o StrictHostKeyChecking=no'

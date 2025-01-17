@@ -77,4 +77,4 @@
   tasks:
   - name: Add -F option ansible_ssh_extra_args
     ansible.builtin.set_fact:
-      ansible_ssh_extra_args: "{{ ansible_ssh_extra_args | default() }} -F {{ hostvars['localhost'].ansible_ssh_config }}"
+      ansible_ssh_extra_args: "{{ ansible_ssh_extra_args | default() }} -F {{ hostvars.localhost.ansible_ssh_config }}"

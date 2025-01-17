@@ -14,35 +14,7 @@
       that: ocp4_pull_secret | default("") | length > 0
       fail_msg: ocp4_pull_secret variable must be defined
       success_msg: ocp4_pull_secret variable is defined
-
-  - name: GCP Pre Infrastructure tasks
-    when: cloud_provider == 'gcp'
-    block:
-    - name: Run add user to GCP project role
-      ansible.builtin.include_role:
-        name: open_env_gcp_add_user_to_project
-
-    - name: Create GCP Credentials File
-      ansible.builtin.include_role:
-        name: infra_gcp_credentials_file
-
-    - name: Get Google Cloud SDK
-      ansible.builtin.include_role:
-        name: infra_gcp_install_sdk
-
-  - name: Azure Pre Infrastructure tasks
-    when: cloud_provider == "azure"
-    block:
-    - name: If windows_password is not defined, generate one
-      when: windows_password is not defined
-      block:
-      - name: Generate Windows administrator password if not already defined
-        ansible.builtin.command: openssl rand -base64 25
-        register: r_password_gen
-
-      - name: Set fact generated_windows_password (just generated)
-        ansible.builtin.set_fact:
-          generated_windows_password: "{{ r_password_gen.stdout }}"
+      quiet: true
 
   - name: AWS Pre Infrastructure tasks
     when: cloud_provider == "aws"
@@ -82,3 +54,28 @@
               _r.workers3.availability_zone | default(none),
               _r.workers4.availability_zone | default(none),
             ] | select() | list }}
+
+  - name: GCP Pre Infrastructure tasks
+    when: cloud_provider == 'gcp'
+    block:
+    - name: Run add user to GCP project role
+      ansible.builtin.include_role:
+        name: open_env_gcp_add_user_to_project
+
+    - name: Create GCP Credentials File
+      ansible.builtin.include_role:
+        name: infra_gcp_credentials_file
+
+    - name: Get Google Cloud SDK
+      ansible.builtin.include_role:
+        name: infra_gcp_install_sdk
+
+  - name: Azure Pre Infrastructure tasks (generate Windows password if not defined)
+    when:
+    - cloud_provider == "azure"
+    - windows_password is not defined
+    ansible.builtin.set_fact:
+      generated_windows_password: >-
+        {{ lookup('password', '/dev/null chars=ascii_letters,digits '
+            ~ 'length=25'
+        ) }}

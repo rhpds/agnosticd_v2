@@ -2,19 +2,19 @@
 - name: Install client and OpenShift Installer binaries
   ansible.builtin.import_tasks: install_installer.yml
 
-- name: Enable FIPS mode on host
-  when:
-  - host_ocp4_installer_fips_enable | default(false) | bool
-  - host_ocp4_installer_version is version_compare('4.16', '>=')
-  become: true
-  ansible.builtin.import_tasks: setup_fips_host.yml
-
-- name: Generate install_config.yaml
-  ansible.builtin.import_tasks: generate_install_config.yml
-
 - name: Run the installation
   when: host_ocp4_installer_install_openshift | bool
   block:
+  - name: Enable FIPS mode on host
+    when:
+    - host_ocp4_installer_fips_enable | default(false) | bool
+    - host_ocp4_installer_version is version_compare('4.16', '>=')
+    become: true
+    ansible.builtin.import_tasks: setup_fips_host.yml
+
+  - name: Generate install_config.yaml
+    ansible.builtin.import_tasks: generate_install_config.yml
+
   - name: Installation and getting the logs
     block:
     - name: Create openshift-install manifests

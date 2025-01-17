@@ -94,7 +94,7 @@
       cloudformation_out is succeeded
       and (
         'output' in cloudformation_out
-        and cloudformation_out.output in ["Stack CREATE complete", "Stack is already up-to-date."]
+        and cloudformation_out.output in ["Stack CREATE complete", "Stack is already up-to-date.", "Stack UPDATE failed"]
       )
     retries: "{{ cloudformation_retries | default(3) }}"
     delay: "{{ cloudformation_retry_delay | default(30) }}"
@@ -182,8 +182,8 @@
     - destroy_cf_deployment
     - destroy_cloud_deployment
 
-  - name: Save aws_region_loop into aws_region_final
-    when: cloudformation_out is succeeded
+  - name: Save aws_region_loop and cloudformation_out into aws_region_final and cloudformation_out_final
+    when: (cloudformation_out is succeeded) or (not cloudformation_out.changed)
     ansible.builtin.set_fact:
       aws_region_final: "{{ aws_region_loop }}"
       # keep cloudformation_out elsewhere because it's overriden by later runs of this
@@ -207,7 +207,7 @@
     ansible.builtin.set_fact:
       stack_deployed: true
 
-  - name: Save stack deployed for futur runs (idempotent)
+  - name: Save stack deployed for future runs (idempotent)
     when: cloudformation_out is succeeded
     agnosticd_user_info:
       data:

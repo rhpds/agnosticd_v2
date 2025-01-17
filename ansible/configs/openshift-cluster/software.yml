@@ -4,6 +4,6 @@
   gather_facts: false
   become: true
   tasks:
-  - name: Debug openshift-cluster software playbook
-    ansible.builtin.debug:
-      msg: "openshift-cluster Software playbook"
+  - name: Install OpenShift
+    ansible.builtin.include_role:
+      name: host_ocp4_deploy

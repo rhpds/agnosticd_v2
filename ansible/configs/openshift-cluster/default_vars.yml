@@ -39,7 +39,7 @@ install_ftl: false
 # Only satellite is supported for RHEL 9 and newer
 repo_method: satellite
 
-# These vars are needed and should come from secrets:
+# These vars are needed and nee to come from secrets:
 # satellite_url: # This should be stored in secrets
 # satellite_org: # This should be stored in secrets
 # satellite_activationkey: # This should be stored in secrets
@@ -59,6 +59,13 @@ install_common: true
 # As part of the "common" role, this cause it to do a yum update on the host
 update_packages: true
 
+# How to deploy OpenShift
+# Valid values are
+# - openshift-install
+# - openshift-assisted
+# - openshift-hcp-cnv
+host_ocp4_deploy_installation_method: openshift-install
+
 # Types of Nodes (workers / masters) are set in the
 # cloud specific vars file
 # Number of Nodes
@@ -72,9 +79,9 @@ worker_instance_count: 2
 # worker_storage_type: "__DEFAULT__"
 # worker_storage_size: "100Gi"
 
-# Use 4.16 for latest available release in the `stable-4.12` directory.
-# Use 4.16.1 for exactly the specified release
-host_ocp4_installer_version: "4.16"
+# Use 4.17 for latest available release in the `stable-4.17` directory.
+# Use 4.17.1 for exactly the specified release
+host_ocp4_installer_version: "4.17"
 
 # See role host-ocp4-installer for additional OpenShift 4 Installer options
 # E.g. OpenShift Cluster processor architectore or OpenShift installer download location
@@ -97,19 +104,19 @@ host_ocp4_installer_network_type: OVNKubernetes
 # Set to true to enable creating a cluster-admin service account during installation
 openshift_cluster_admin_service_account_enable: false
 
+# Print user info
+ocp4_cluster_show_access_user_info: true
+openshift_cluster_show_access_user_info: true
+
 # YAML List of Infrastructure Workloads.
 # REQUIRES Ansible 2.7+ on the deployer host
 # Empty by default - to be set by specific configurations
 workloads: []
 
-# Suggested infra workloads for a base workshop cluster:
+# Suggested workloads for a base workshop cluster:
 #  - ocp4_workload_cert_manager
 #  - ocp4_workload_authentication
 
 # Some workloads create infrastructure that needs to be removed
 # when deleting the software or infrastructure. These workloads run on the controller
 remove_workloads: []
-
-# Some workloads create infrastructure that needs to be removed
-# when deleting the software or infrastructure. These workloads run on the bastion
-remove_workloads_bastion: []

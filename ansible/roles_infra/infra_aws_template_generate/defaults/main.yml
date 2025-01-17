@@ -1,9 +1,6 @@
 ---
-# TODO: split into different files. Possible since 2.6 thanks to this commit:
-# https://github.com/ansible/ansible/commit/95ce00ff00e2907e89f4106747abaf9d4e4ccd7f
-
+aws_comment: Created by Ansible Agnostic Deployer
 cloudformation_retries: 1
-aws_comment: "Created by Ansible Agnostic Deployer"
 
 #################################################################
 # VPC
@@ -26,14 +23,14 @@ default_security_groups:
 - name: BastionSG
   rules:
   - name: MoshPublic
-    description: "Public Mosh Access for bastions"
+    description: Public Mosh Access for bastions
     from_port: 60000
     to_port: 61000
     protocol: udp
     cidr: "0.0.0.0/0"
     rule_type: Ingress
   - name: SSHPublic
-    description: "Public Access for bastions"
+    description: Public Access for bastions
     from_port: 22
     to_port: 22
     protocol: tcp
@@ -43,14 +40,14 @@ default_security_groups:
 - name: DefaultSG
   rules:
   - name: FromBastionTCP
-    description: "Allow everything from Bastion"
+    description: Allow everything from Bastion
     from_port: 0
     to_port: 65535
     protocol: tcp
     from_group: BastionSG
     rule_type: Ingress
   - name: FromBastionUDP
-    description: "Allow everything from Bastion"
+    description: Allow everything from Bastion
     from_port: 0
     to_port: 65535
     protocol: tcp
@@ -487,7 +484,7 @@ aws_dns_mapping:
   "me-south-1":
     domain: "me-south-1.compute.internal"
 
-# When infra_ec2_template_generate_auto_select_availability_zone is set to true,
+# When infra_aws_template_generate_auto_select_availability_zone is set to true,
 # the role will set aws_availability_zone to an availability that can host
 # all instances types, unless several subnets are used.
-infra_ec2_template_generate_auto_select_availability_zone: true
+infra_aws_template_generate_auto_select_availability_zone: true

@@ -11,18 +11,13 @@
         guid: "{{ guid }}"
         cloud_provider: "{{ cloud_provider | default('none') }}"
 
-  - name: GCP Post Infrastructure
-    when: cloud_provider is match("gcp")
-    block:
-    - name: Create secret for SSH Key
-      ansible.builtin.include_role:
-        name: infra_gcp_ssh_key
-
   - name: AWS Post Infrastructure
     when: cloud_provider is match("aws")
     block:
-    - name: Save Route53User credentials from stack outputs
+    # See logic in aws_infrastructure_deployment.yml for how these variables are set
+    - name: Save Route53User credentials from stack outputs (CloudFormation just created)
       when:
+      - not cloudformation_already_deployed | bool
       - cloudformation_out_final is defined
       - cloudformation_out_final.stack_outputs.Route53UserAccessKey is defined
       - cloudformation_out_final.stack_outputs.Route53UserSecretAccessKey is defined
@@ -30,6 +25,32 @@
         route53user: "{{ cloudformation_out_final.stack_outputs.Route53User }}"
         route53user_access_key: "{{ cloudformation_out_final.stack_outputs.Route53UserAccessKey }}"
         route53user_secret_access_key: "{{ cloudformation_out_final.stack_outputs.Route53UserSecretAccessKey }}"
+
+    - name: Save Route53User credentials from stack outputs (CloudFormation existed previously)
+      when:
+      - cloudformation_already_deployed | bool
+      - cloudformation_existing is defined
+      - cloudformation_existing[project_tag].stack_outputs.Route53UserAccessKey is defined
+      - cloudformation_existing[project_tag].stack_outputs.Route53UserSecretAccessKey is defined
+      ansible.builtin.set_fact:
+        route53user: "{{ cloudformation_existing[project_tag].stack_outputs.Route53User }}"
+        route53user_access_key: "{{ cloudformation_existing[project_tag].stack_outputs.Route53UserAccessKey }}"
+        route53user_secret_access_key: "{{ cloudformation_existing[project_tag].stack_outputs.Route53UserSecretAccessKey }}"
+
+    - name: Debug Route53 variables
+      ansible.builtin.debug:
+        msg: "{{ item }}"
+      loop:
+      - "route53user: {{ route53user }}"
+      - "route53user_access_key: {{ route53user_access_key }}"
+      - "route53user_secret_access_key: {{ route53user_secret_access_key }}"
+
+  - name: GCP Post Infrastructure
+    when: cloud_provider is match("gcp")
+    block:
+    - name: Create secret for SSH Key
+      ansible.builtin.include_role:
+        name: infra_gcp_ssh_key
 
   - name: Azure Post Infrastructure
     when: cloud_provider is match("azure")
@@ -51,7 +72,7 @@
       loop: "{{ vm_list }}"
 
     - name: Print Host Information
-      when: ocp4_cluster_show_access_user_info | bool
+      when: openshift_cluster_show_access_user_info | bool
       agnosticd_user_info:
         msg: "{{ item }}"
       loop:
@@ -59,33 +80,3 @@
       - "RHEL Bastion Host: {{ rhel_remote_host }}"
       - "Windows Host(s): {{ windows_remote_hosts }}"
       - "Windows Password: {{ windows_password }}"
-
-# - name: Step 002 Post Infrastructure regreSSHion hotfix
-#   hosts: all:!windows:!network
-#   become: true
-#   tags:
-#   - regresshion_hotfix
-#   tasks:
-#   - name: Have facts been gathered?
-#     when: ansible_facts['ansible_distribution'] is not defined
-#     ansible.builtin.setup:
-#       gather_subset:
-#       - '!all'
-#       - '!min'
-#       - 'distribution'
-
-  # - name: Fix regreSSHion when RHEL 9 only
-  #   when:
-  #   - ansible_distribution == "RedHat"
-  #   - ansible_distribution_major_version == "9"
-  #   block:
-  #   - name: Set sshd LoginGraceTime to 0 in /etc/ssh/sshd_config
-  #     ansible.builtin.lineinfile:
-  #       path: /etc/ssh/sshd_config
-  #       regexp: ".*LoginGraceTime.*"
-  #       line: 'LoginGraceTime 0'
-
-  #   - name: Restart SSH service for regreSSHion fix
-  #     ansible.builtin.service:
-  #       name: sshd
-  #       state: restarted

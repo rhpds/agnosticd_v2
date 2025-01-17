@@ -35,15 +35,15 @@
   - name: Debug secrets
     ansible.builtin.debug:
       msg: "Secrets file: {{ secrets_file | default('undefined') }}"
+      verbosity: 2
 
   - name: Include secret_file if passed as extra-var
     when: secret_file is defined
     ansible.builtin.include_vars:
       file: "{{ secret_file }}"
 
-  # noqa: run-once[task]
   - name: Set passthrough user data
-    run_once: true
+    delegate_to: localhost
     when:
     - agnosticd_passthrough_user_data is defined
     - agnosticd_passthrough_user_data | length > 0

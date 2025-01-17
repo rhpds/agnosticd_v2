@@ -32,7 +32,7 @@ If you set a value for this variable, the *first* VPC will be associated to the 
 .Simple example.
 ----
 - include_role:
-    name: infra-ec2-vpc-peering
+    name: infra-aws-vpc-peering
   vars:
     vpc_region: us-east-1
     peer_region: eu-central-1
@@ -44,7 +44,7 @@ If you set a value for this variable, the *first* VPC will be associated to the 
 .Complex example to connect every regions to each others.
 ----
 - include_role:
-    name: infra-ec2-vpc-peering
+    name: infra-aws-vpc-peering
   vars:
     vpc_region: "{{ _region[0].region }}"
     peer_region: "{{ _region[1].region }}"

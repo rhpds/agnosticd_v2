@@ -1,0 +1,7 @@
+---
+# How to deploy OpenShift
+# Valid values are
+# - openshift-install
+# - openshift-assisted
+# - openshift-hcp-cnv
+host_ocp4_deploy_installation_method: openshift-install

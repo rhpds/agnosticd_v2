@@ -3,7 +3,7 @@
 # that can host all instance types. That results in random errors.
 - name: Detect all possible Availability Zones that can host all the instance types and pick one
   when:
-  - infra_ec2_template_generate_auto_select_availability_zone | bool
+  - infra_aws_template_generate_auto_select_availability_zone | bool
   - instances | length > 0
   - aws_availability_zone is undefined
   ansible.builtin.include_tasks: locate_availability_zones.yml
@@ -28,11 +28,6 @@
     dest: "{{ cloudformation_template }}"
     mode: "0664"
 
-- name: Stop if debugging template
-  when: debug_template | default(false) | bool
-  ansible.builtin.fail:
-    msg: "Check template here: {{ cloudformation_template }}"
-
 ######################### Copy CF Template to S3 if too big
 - name: Stat CloudFormation template
   ansible.builtin.stat:
@@ -49,18 +44,16 @@
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
     AWS_DEFAULT_REGION: "{{ aws_region_final | default(aws_region) }}"
   block:
-  - name: Get user name
-    ansible.builtin.command: aws iam get-user
-    register: r_get_user
-    ignore_errors: true
+  - name: Get Caller Identity
+    amazon.aws.aws_caller_info:
+    register: r_aws_user
 
   # Bucket name must be globally unique. Use the userID to define the bucketname.
   # Otherwise when we use the code in another account it fails because the bucket
   # already exists.
   - name: Save AWS account user
     ansible.builtin.set_fact:
-      aws_account_user: "{{ r_get_user.stdout | from_json | json_query('User.UserId') }}"
-    ignore_errors: true
+      aws_account_user: "{{ r_aws_user.user_id }}"
 
   - name: Set bucket templates
     ansible.builtin.set_fact:

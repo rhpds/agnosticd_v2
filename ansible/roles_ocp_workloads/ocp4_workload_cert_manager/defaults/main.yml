@@ -47,21 +47,23 @@ ocp4_workload_cert_manager_zerossl_hmac_key: ""
 # Settings for AWS
 # ---------------------------------------------------------------
 # Set from AgnosticV to the actual AWS credentials
-# region this is being deployed to. E.g.
-ocp4_workload_cert_manager_aws_region: "{{ aws_region }}"
-ocp4_workload_cert_manager_aws_access_key_id: "{{ hostvars.localhost.route53user_access_key }}"
-ocp4_workload_cert_manager_aws_secret_access_key: "{{ hostvars.localhost.route53user_secret_access_key }}"
-ocp4_workload_cert_manager_aws_hostedzoneid: "{{ hostvars.localhost.route53_aws_zone_id | default('') }}"
+# ocp4_workload_cert_manager_aws_region: "{{ aws_region }}"
+# ocp4_workload_cert_manager_aws_access_key_id: "{{ hostvars.localhost.route53user_access_key }}"
+# ocp4_workload_cert_manager_aws_secret_access_key: "{{ hostvars.localhost.route53user_secret_access_key }}"
 
 # If a HostedZoneID is provided use that one, otherwise determine dynamically
-# ocp4_workload_cert_manager_aws_hostedzoneid: ""
+# Use dynamic for aws and specify the hostedzone for other platforms like CNV
+# ocp4_workload_cert_manager_aws_hostedzoneid: "{{ hostvars.localhost.route53_aws_zone_id | default('') }}"
+
+ocp4_workload_cert_manager_aws_region: ""
+ocp4_workload_cert_manager_aws_access_key_id: ""
+ocp4_workload_cert_manager_aws_secret_access_key: ""
+ocp4_workload_cert_manager_aws_hostedzoneid: ""
 
 # ---------------------------------------------------------------
 # Settings for GCP
 # ---------------------------------------------------------------
 # Set from AgnosticV to the actual GCP credentials
-# ocp4_workload_cert_manager_cloud_provider: gcp
-
 ocp4_workload_cert_manager_gcp_project_id: "{{ gcp_project_id }}"
 ocp4_workload_cert_manager_gcp_credentials: "{{ gcp_credentials }}"
 
@@ -69,8 +71,6 @@ ocp4_workload_cert_manager_gcp_credentials: "{{ gcp_credentials }}"
 # Settings for Azure
 # ---------------------------------------------------------------
 # Set from AgnosticV to the actual azure credentials
-# ocp4_workload_cert_manager_cloud_provider: azure
-
 ocp4_workload_cert_manager_azure_client_id: "{{ azure_service_principal }}"
 ocp4_workload_cert_manager_azure_environment: AzurePublicCloud
 ocp4_workload_cert_manager_azure_hostedzone_name: "{{ azure_user_domain }}"

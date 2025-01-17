@@ -10,10 +10,6 @@
     ansible.builtin.debug:
       msg: "Post-Software Steps starting"
 
-  # - name: Set Ansible Python interpreter to k8s virtualenv
-  #   ansible.builtin.set_fact:
-  #     ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python
-
   - name: Setup cluster-admin service account
     when: openshift_cluster_admin_service_account_enable | bool
     ansible.builtin.include_role:
@@ -46,34 +42,6 @@
 - name: Step 005.2 - Deploy Workloads
   ansible.builtin.import_playbook: workloads.yml
 
-- name: Step 005.3 - Deploy Workloads for Bastion
-  hosts: bastions
-  become: true
-  tasks:
-  - name: Set Ansible Python Interpreter
-    ansible.builtin.set_fact:
-      ansible_python_interpreter: /usr/libexec/platform-python
-
-  - name: Deploy Software workloads
-    when: software_workloads_for_bastion | default("") | length > 0
-    ansible.builtin.include_role:
-      name: "{{ _software_bastion }}"
-    loop: "{{ software_workloads_for_bastion }}"
-    loop_control:
-      loop_var: _software_bastion
-
-- name: Step 005.4 Install showroom on bastion
-  hosts: bastions
-  gather_facts: false
-  become: true
-  tasks:
-  - name: Deploy Showroom
-    when: showroom_deploy | default(false) | bool
-    vars:
-      ansible_python_interpreter: /usr/libexec/platform-python
-    ansible.builtin.include_role:
-      name: showroom
-
 - name: Step 005.5 Print Student Info
   hosts: localhost
   gather_facts: false
@@ -82,7 +50,7 @@
   - name: Report Access Information
     when:
     - install_student_user | bool
-    - ocp4_cluster_show_access_user_info | bool
+    - openshift_cluster_show_access_user_info | bool
     - cloud_provider != "openshift_cnv"
     vars:
       _bastion_inventory_name: "{{ groups['bastions'][0] }}"
@@ -118,10 +86,8 @@
           bastion_ssh_password: "{{ _bastion_ssh_password }}"
           bastion_ssh_user_name: "{{ student_name }}"
         msg: |
-          You can access your bastion via SSH:
+          You can access your bastion via SSH using password '{{ _bastion_ssh_password }}':
           ssh {{ student_name }}@{{ _bastion_public_hostname }}
-
-          Make sure you use the username '{{ student_name }}' and the password '{{ _bastion_ssh_password }}' when prompted.
 
   - name: Print access user info (CNV)
     when:
@@ -131,18 +97,16 @@
       data:
         bastion_ssh_port: "{{ hostvars[groups['bastions'][0]].bastion_ssh_port }}"
       msg: |
-        You can access your bastion via SSH:
+        You can access your bastion via SSH using password '{{ hostvars[groups['bastions'][0]]['student_password'] }}':
         ssh {{ student_name }}@{{ openshift_cnv_ssh_address }} -p {{ hostvars[groups['bastions'][0]].bastion_ssh_port }}
 
-        Enter ssh password when prompted: {{ hostvars[groups['bastions'][0]]['student_password'] }}
-
-- name: Step 005.5 Clean up Google SDK
-  hosts: localhost
-  gather_facts: false
-  become: false
-  tasks:
-  - name: Remove Google Cloud SDK
-    when: cloud_provider == "gcp"
-    ansible.builtin.file:
-      path: "{{ output_dir }}/google-cloud-sdk"
-      state: absent
+# - name: Step 005.5 Clean up Google SDK
+#   hosts: localhost
+#   gather_facts: false
+#   become: false
+#   tasks:
+#   - name: Remove Google Cloud SDK
+#     when: cloud_provider == "gcp"
+#     ansible.builtin.file:
+#       path: "{{ output_dir }}/google-cloud-sdk"
+#       state: absent

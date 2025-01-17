@@ -57,8 +57,33 @@
     ansible.builtin.include_role:
       name: infra_aws_template_generate
 
+  - name: Check if Cloudformation has been deployed already
+    amazon.aws.cloudformation_info:
+      aws_access_key: "{{ aws_access_key_id }}"
+      aws_secret_key: "{{ aws_secret_access_key }}"
+      stack_name: "{{ project_tag }}"
+      region: "{{ aws_region }}"
+    register: r_cloudformation
+
+  - name: Debug cloudformation
+    ansible.builtin.debug:
+      var: r_cloudformation
+
+  - name: Set cloudformation already deployed fact to true
+    when: r_cloudformation.cloudformation | length > 0
+    ansible.builtin.set_fact:
+      cloudformation_already_deployed: true
+      cloudformation_existing: "{{ r_cloudformation.cloudformation }}"
+
+  - name: Set cloudformation already deployed fact to false
+    when: r_cloudformation.cloudformation | length == 0
+    ansible.builtin.set_fact:
+      cloudformation_already_deployed: false
+
   - name: Run infra_aws_template_create role
-    when: cloudformation_enabled | default(true) | bool
+    when: 
+    - cloudformation_enabled | default(true) | bool
+    - not cloudformation_already_deployed | bool
     vars:
       aws_region_loop: "{{ aws_region }}"
     ansible.builtin.include_role:
@@ -67,6 +92,7 @@
   - name: Run infra_aws_template_create role into FallBack region
     when:
     - cloudformation_enabled | default(true) | bool
+    - not cloudformation_already_deployed | bool
     - fallback_regions is defined
     - cloudformation_out is failed
     vars:
@@ -80,6 +106,7 @@
       msg: "FAIL {{ project_tag }} Create Cloudformation"
     when:
     - cloudformation_enabled | default(true) | bool
+    - not cloudformation_already_deployed | bool
     - not cloudformation_out is succeeded
 
 - name: Step 001.2 Create inventory and SSH config setup
@@ -121,7 +148,7 @@
   tasks:
   - name: Set facts for remote access
     ansible.builtin.set_fact:
-      aws_region_final: "{{ hostvars['localhost'].aws_region_final }}"
+      aws_region_final: "{{ hostvars.localhost.aws_region_final }}"
       ansible_ssh_extra_args: "{{ ansible_ssh_extra_args | default() }} -F {{ output_dir }}/{{ config }}_{{ guid }}_ssh_conf"
 
   - name: Run infra_aws_wait_for_linux_hosts role
@@ -156,11 +183,11 @@
       ansible_become: false
       ansible_connection: winrm
       ansible_host: "{{ public_dns_name }}"
-      ansible_password: "{{ hostvars['localhost'].windows_password | default(hostvars['localhost'].generated_windows_password) }}"
+      ansible_password: "{{ hostvars.localhost.windows_password | default(hostvars.localhost.generated_windows_password) }}"
       ansible_port: 5986
       ansible_user: Administrator
       ansible_winrm_server_cert_validation: ignore
-      aws_region_final: "{{ hostvars['localhost'].aws_region_final }}"
+      aws_region_final: "{{ hostvars.localhost.aws_region_final }}"
 
   - name: Run infra_aws_wait_for_windows_hosts role
     ansible.builtin.include_role:
