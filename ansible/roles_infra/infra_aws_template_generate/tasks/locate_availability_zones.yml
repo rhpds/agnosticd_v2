@@ -12,9 +12,10 @@
 
 # Sometimes the flavor is a map
 # In that case, get the .ec2 value.
-- when:
-    - __all_instance_types | length > 0
-    - __all_instance_types[0] is mapping
+- name: Get the ec2 value
+  when:
+  - __all_instance_types | length > 0
+  - __all_instance_types[0] is mapping
   ansible.builtin.set_fact:
     __all_instance_types: >-
         {{
@@ -51,7 +52,8 @@
       | unique )
       }}
 
-- when:
+- name: Locate Availability Zones
+  when:
     # Run only if some instance types were found
     - __all_instance_types | length > 0
     # Run only if the AWS CLI has the cabability to list offerings

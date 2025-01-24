@@ -93,7 +93,7 @@
     src: "{{ _host_ocp4_installer_root_url }}"
     remote_src: true
     dest: /usr/bin
-    mode: "u=rwx,g=rwx,o=rx"
+    mode: ug=rwx,o=rx
     owner: root
     group: root
   register: r_installer
@@ -115,7 +115,7 @@
     state: hard
     owner: root
     group: root
-    mode: "u=rwx,g=rwx,o=rx"
+    mode: ug,o=rx
 
 - name: Get the OpenShift CLI
   become: true
@@ -123,7 +123,7 @@
     src: "{{ _host_ocp4_installer_client_url }}"
     remote_src: true
     dest: /usr/bin
-    mode: "u=rwx,g=rwx,o=rx"
+    mode: ug=rwx,o=rx
     owner: root
     group: root
   register: r_client

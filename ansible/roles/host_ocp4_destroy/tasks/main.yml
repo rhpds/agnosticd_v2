@@ -25,8 +25,8 @@
   register: r_stat_metadata_json
 
 - name: Run openshift-installer destroy cluster
+  when: r_stat_metadata_json.stat.exists
   become: false
   ansible.builtin.command: openshift-install destroy cluster --dir=/home/{{ ansible_user }}/{{ cluster_name }}
   async: "{{ 2 * 60 * 60 }}"
   poll: 60
-  when: r_stat_metadata_json.stat.exists

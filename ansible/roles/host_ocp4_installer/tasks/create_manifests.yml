@@ -3,39 +3,6 @@
   become: false
   ansible.builtin.command: openshift-install create manifests --dir=/home/{{ ansible_user }}/{{ cluster_name }}
 
-# This downloads all the extra manifests which are maintained by Tigera
-# Can't use unarchive module as it does not handle .gz files that do not contain a .tar archive.
 - name: Set up with Calico
   when: host_ocp4_installer_network_type | default("OVNKubernetes") == "Calico"
-  block:
-  - name: Make sure manifests dir exists
-    ansible.builtin.file:
-      path: "/home/{{ ansible_user }}/{{ cluster_name }}/manifests/"
-      state: directory
-      mode: "0775"
-
-  - name: Download Project Calico Manifest archive file to home dir
-    ansible.builtin.get_url:
-      url: "https://projectcalico.docs.tigera.io/manifests/ocp.tgz"
-      dest: "/home/{{ ansible_user }}/"
-      validate_certs: false
-      mode: "0664"
-    retries: 3
-    delay: 3
-    register: r_result
-    until: r_result is not failed
-
-  - name: Extract Project Calico manifest files
-    ansible.builtin.shell:
-      cmd: "gtar -x -f /home/{{ ansible_user }}/ocp.tgz --strip-components 1 -C /home/{{ ansible_user }}/{{ cluster_name }}/manifests/"
-
-  - name: Verify permissions on Calico manifest files are set to 775
-    ansible.builtin.file:
-      path: "/home/{{ ansible_user }}/{{ cluster_name }}/manifests/"
-      state: directory
-      recurse: true
-      mode: "0775"
-
-  - name: Remove downloaded file
-    ansible.builtin.file:
-      path: "/home/{{ ansible_user }}/ocp.tgz"
+  ansible.builtin.include_tasks: setup_calico_networking.yml

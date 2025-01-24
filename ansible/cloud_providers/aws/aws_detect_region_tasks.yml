@@ -8,7 +8,7 @@
       AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
     ansible.builtin.command: >-
       aws cloudformation describe-stacks
-      --stack-name {{project_tag}} --region {{item}}
+      --stack-name {{ project_tag }} --region {{ item }}
     register: r_cloudformation_detect
     loop: "{{ [aws_region] + fallback_regions | default([]) }}"
     changed_when: false

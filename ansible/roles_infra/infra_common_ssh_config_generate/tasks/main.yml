@@ -37,7 +37,7 @@
   ansible.builtin.blockinfile:
     dest: "{{ ansible_ssh_config }}"
     marker: "##### {mark} ADDED BASTION PROXY HOST {{ bastion_hostname }} {{ config }}-{{ guid }} ######"
-# yamllint disable rule:line-length
+    # yamllint disable rule:line-length
     content: |
        Host {{ bastion_hostname }} {{ hostvars[bastion_hostname].shortname | default('') }}
          Hostname {{ hostvars[bastion_hostname].public_dns_name | default(hostvars[bastion_hostname].public_ip_address) }}
@@ -52,7 +52,7 @@
          ConnectTimeout 60
          ConnectionAttempts 10
          UserKnownHostsFile {{ ansible_known_host }}
-# yamllint enable rule:line-length
+    # yamllint enable rule:line-length
 
 - name: Add all hosts to workdir ssh config file
   when:
@@ -61,7 +61,7 @@
   ansible.builtin.blockinfile:
     dest: "{{ ansible_ssh_config }}"
     marker: "##### {mark} ADDED Node Proxy Config {{ item }} {{ config }}-{{ guid }} ######"
-# yamllint disable rule:line-length
+    # yamllint disable rule:line-length
     block: |
       Host {{ item }} {{  hostvars[item].public_ip_address | default('') }} {{ hostvars[item].shortname | default('') }}
       {% if hostvars[item].isolated | bool %}
@@ -82,4 +82,4 @@
         ControlPath /tmp/{{ guid }}-%r-%h-%p
         ControlPersist 5m
   loop: "{{ groups['all'] }}"
-# yamllint enable rule:line-length
+  # yamllint enable rule:line-length

@@ -5,7 +5,7 @@
   become: false
   gather_facts: false
   tasks:
-  - name: All-Cloud Post Infrastructure
+  - name: Save user data
     agnosticd_user_info:
       data:
         guid: "{{ guid }}"
@@ -14,7 +14,16 @@
   - name: AWS Post Infrastructure
     when: cloud_provider is match("aws")
     block:
-    # See logic in aws_infrastructure_deployment.yml for how these variables are set
+    - name: Debug cloudformation_out_final
+      when: cloudformation_out_final is defined
+      ansible.builtin.debug:
+        var: cloudformation_out_final
+    - name: Debug cloudformation_out_existing
+      when: cloudformation_out_existing is defined
+      ansible.builtin.debug:
+        var: cloudformation_out_existing
+
+    # See logic in cloud_providers/aws/aws_infrastructure_deployment.yml for how these variables are set
     - name: Save Route53User credentials from stack outputs (CloudFormation just created)
       when:
       - not cloudformation_already_deployed | bool

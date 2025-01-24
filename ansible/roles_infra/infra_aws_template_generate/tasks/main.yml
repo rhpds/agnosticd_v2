@@ -26,7 +26,7 @@
   ansible.builtin.template:
     src: "{{ cloudformation_template_src }}"
     dest: "{{ cloudformation_template }}"
-    mode: "0664"
+    mode: ug=rw,o=r
 
 ######################### Copy CF Template to S3 if too big
 - name: Stat CloudFormation template
@@ -63,8 +63,12 @@
     amazon.aws.s3_bucket:
       name: "{{ bucket_templates }}"
 
-  - name: Copy template to S3
-    ansible.builtin.include_tasks: upload_template_s3_object.yml
+  - name: Copy Template to S3
+    amazon.aws.aws_s3:
+      bucket: "{{ bucket_templates }}"
+      object: "{{ config }}.{{ guid }}.{{ cloud_provider }}_cloud_template"
+      src: "{{ cloudformation_template }}"
+      mode: put
 
 ######################### Validate CF Template
 - name: Check for !Ref in CF template
@@ -89,7 +93,7 @@
     src: "{{ r_ref_presence.backup }}"
     dest: "{{ cloudformation_template }}"
     remote_src: true
-    mode: "0664"
+    mode: ug=rw,o=r
 
 - name: Validate cloudformation template with validate-template (local)
   when: stat_template.stat.size <= 51200

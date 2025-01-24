@@ -1,6 +1,4 @@
 ---
-# TODO: test DryRun capacity reservation
-
 - name: Retrieve stack_deployed from provision-user-data.yml
   when: stack_deployed is undefined
   ansible.builtin.set_fact:
@@ -14,7 +12,8 @@
   ansible.builtin.set_fact:
     aws_region: "{{ lookup('agnosticd_user_data', 'aws_region') }}"
 
-- when: stack_deployed is not defined or stack_deployed == false
+- name: Stack has not been deployed
+  when: stack_deployed is not defined or not stack_deployed | bool
   block:
   - name: Create on-demand capacity reservations and save result
     agnosticd_odcr:

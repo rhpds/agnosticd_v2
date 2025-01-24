@@ -89,7 +89,7 @@
     ansible.builtin.include_role:
       name: infra_aws_template_create
 
-  - name: Run infra_aws_template_create role into FallBack region
+  - name: Run infra_aws_template_create role into fallback region
     when:
     - cloudformation_enabled | default(true) | bool
     - not cloudformation_already_deployed | bool
@@ -101,7 +101,7 @@
       name: infra_aws_template_create
     loop: "{{ fallback_regions }}"
 
-  - name: Report Cloudformation error
+  - name: Report cloudformation error
     ansible.builtin.fail:
       msg: "FAIL {{ project_tag }} Create Cloudformation"
     when:

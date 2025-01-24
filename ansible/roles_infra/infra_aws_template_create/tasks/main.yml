@@ -59,9 +59,6 @@
       disable_rollback: true
       tags: "{{ cloud_tags_final }}"
       template_body: "{{ lookup('file', cloudformation_template) }}"
-    tags:
-    - aws_infrastructure_deployment
-    - provision_cf_template
     register: cloudformation_out
     until: >-
       cloudformation_out is succeeded
@@ -86,9 +83,6 @@
       tags: "{{ cloud_tags_final }}"
       template_url: "https://s3.amazonaws.com/{{ bucket_templates }}/{{ config }}.{{ guid }}.{{ cloud_provider }}_cloud_template"
     args: "{{ cloudform_args }}"
-    tags:
-    - aws_infrastructure_deployment
-    - provision_cf_template
     register: cloudformation_out
     until: >-
       cloudformation_out is succeeded
@@ -104,13 +98,11 @@
     when: not cloudformation_out is succeeded
     ansible.builtin.debug:
       var: cloudformation_out
-    tags: provision_cf_template
 
   - name: Debug cloudformation
     ansible.builtin.debug:
       var: cloudformation_out
       verbosity: 2
-    tags: provision_cf_template
 
   - name: Set up fallback deploy
     when:
@@ -129,8 +121,6 @@
         state: absent
         force: true
         region: "{{ aws_region_loop | default(aws_region) }}"
-      tags:
-      - remove_s3
       register: s3_result
       until: s3_result is succeeded
       retries: 5
@@ -152,10 +142,6 @@
         disable_rollback: true
         tags:
           Stack: "project {{ config }}-{{ guid }}"
-      tags:
-      - destroying
-      - destroy_cf_deployment
-      - destroy_cloud_deployment
       register: cloudformation_destroy_result
       until: cloudformation_destroy_result is succeeded
       retries: 5
@@ -166,10 +152,6 @@
       when: cloudformation_destroy_result is failed
       ansible.builtin.fail:
         msg: "FAIL {{ project_tag }} Destroy Cloudformation"
-      tags:
-      - destroying
-      - destroy_cf_deployment
-      - destroy_cloud_deployment
 
   - name: Report Cloudformation error
     when:
@@ -177,10 +159,6 @@
     - fallback_regions is not defined
     ansible.builtin.fail:
       msg: "FAIL {{ project_tag }} Create Cloudformation"
-    tags:
-    - destroying
-    - destroy_cf_deployment
-    - destroy_cloud_deployment
 
   - name: Save aws_region_loop and cloudformation_out into aws_region_final and cloudformation_out_final
     when: (cloudformation_out is succeeded) or (not cloudformation_out.changed)
@@ -190,10 +168,10 @@
       # role even if task is skipped (it's a register)
       cloudformation_out_final: "{{ cloudformation_out }}"
 
-  - name: Output region
+  - name: Debug cloudformation_out_final
     ansible.builtin.debug:
       var: cloudformation_out_final
-      verbosity: 2
+      # verbosity: 2
 
   - name: Output region
     when:
@@ -202,18 +180,18 @@
     ansible.builtin.debug:
       msg: "FALLBACK REGION = {{ aws_region_final }}"
 
-  - name: Set stack deployed to true
+  - name: Set stack_deployed to true
     when: cloudformation_out is succeeded
     ansible.builtin.set_fact:
       stack_deployed: true
 
-  - name: Save stack deployed for future runs (idempotent)
+  - name: Save stack_deployed for future runs (idempotent)
     when: cloudformation_out is succeeded
     agnosticd_user_info:
       data:
         stack_deployed: true
 
-  - name: Set stack deployed to false
+  - name: Set stack_deployed to false
     when: cloudformation_out is failed
     ansible.builtin.set_fact:
       stack_deployed: false

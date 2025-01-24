@@ -17,7 +17,8 @@
   check_mode: false
   register: r_possible_azs
 
-- ansible.builtin.debug:
+- name: Debug possible availability zones
+  ansible.builtin.debug:
     var: r_possible_azs
     verbosity: 3
 

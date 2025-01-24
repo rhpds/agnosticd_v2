@@ -1,4 +1,4 @@
-SANDBOX=1639
+SANDBOX=1598
 GUID=wk417
 VARS=openshift-cluster-417
 
@@ -51,6 +51,7 @@ ansible-navigator-execute: ## Execute ansible-playbook with PLAYBOOK of choice
 		--mode stdout \
 		$(USER_EXTRA_ARGS) $(EXTRA_ARGS)
 
+	# export ANSIBLE_DEBUG=1; \
 		# --extra-vars host_ocp4_installer_install_openshift=false \
 
 ansible-navigator-destroy: ## Execute ansible-playbook with PLAYBOOK of choice

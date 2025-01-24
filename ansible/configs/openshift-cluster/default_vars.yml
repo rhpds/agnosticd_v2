@@ -61,10 +61,10 @@ update_packages: true
 
 # How to deploy OpenShift
 # Valid values are
-# - openshift-install
-# - openshift-assisted
-# - openshift-hcp-cnv
-host_ocp4_deploy_installation_method: openshift-install
+# - openshift_install
+# - openshift_assisted
+# - openshift_hcp_cnv
+host_ocp4_deploy_installation_method: openshift_install
 
 # Types of Nodes (workers / masters) are set in the
 # cloud specific vars file
