@@ -18,10 +18,13 @@
       when: cloudformation_out_final is defined
       ansible.builtin.debug:
         var: cloudformation_out_final
+        verbosity: 2
+
     - name: Debug cloudformation_out_existing
       when: cloudformation_out_existing is defined
       ansible.builtin.debug:
         var: cloudformation_out_existing
+        verbosity: 2
 
     # See logic in cloud_providers/aws/aws_infrastructure_deployment.yml for how these variables are set
     - name: Save Route53User credentials from stack outputs (CloudFormation just created)
